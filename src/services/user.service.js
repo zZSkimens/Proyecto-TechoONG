@@ -1,10 +1,9 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
 import bcrypt from "bcrypt";
 
-const userRepository = AppDataSource.getRepository(User);
-
 export async function createUser(data) {
+  const userRepository = AppDataSource.getRepository(User);
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
   const newUser = userRepository.create({
@@ -16,5 +15,6 @@ export async function createUser(data) {
 }
 
 export async function findUserByEmail(email) {
+  const userRepository = AppDataSource.getRepository(User);
   return await userRepository.findOneBy({ email });
 }
