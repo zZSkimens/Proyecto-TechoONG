@@ -72,3 +72,77 @@ export async function getDespachos() {
     relations: ["cuadrilla"],
   });
 }
+
+export async function getDespachosByCuadrilla(cuadrillaId) {
+  const despachoRepository = AppDataSource.getRepository(Despacho);
+  const despachoItemRepository = AppDataSource.getRepository(DespachoItem);
+  
+  const despachos = await despachoRepository.find({
+    where: { cuadrilla: { id: cuadrillaId } },
+    relations: ["cuadrilla"],
+  });
+
+  for (const d of despachos) {
+    const items = await despachoItemRepository.find({
+       where: { despacho: { id: d.id } },
+       relations: ["item"]
+    });
+    d.items = items.map(di => ({
+       id: di.item.id,
+       name: di.item.name,
+       category: di.item.category,
+       cantidad: di.cantidad
+    }));
+  }
+
+  return despachos;
+}
+
+export async function devolverItems(despachoId, itemsDevueltos) {
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    const despacho = await queryRunner.manager.findOneBy(Despacho, { id: despachoId });
+    if (!despacho) {
+      throw new Error("El despacho no existe");
+    }
+
+    const devoluciones = [];
+
+    for (const reqItem of itemsDevueltos) {
+      const despachoItem = await queryRunner.manager.findOneBy(DespachoItem, {
+        despacho: { id: despachoId },
+        item: { id: reqItem.itemId }
+      });
+
+      if (!despachoItem) {
+         throw new Error(`El item con ID ${reqItem.itemId} no forma parte de este despacho.`);
+      }
+
+      if (reqItem.cantidad > despachoItem.cantidad) {
+          throw new Error(`No se puede devolver más cantidad de la que fue despachada para el item ID ${reqItem.itemId}.`);
+      }
+
+      const item = await queryRunner.manager.findOneBy(Item, { id: reqItem.itemId });
+      if (!item) {
+        throw new Error(`El item con ID ${reqItem.itemId} no existe`);
+      }
+
+      // Re-ingresar stock
+      item.stock += reqItem.cantidad;
+      await queryRunner.manager.save(Item, item);
+
+      devoluciones.push({ itemId: item.id, itemName: item.name, cantidadDevuelta: reqItem.cantidad });
+    }
+
+    await queryRunner.commitTransaction();
+    return devoluciones;
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
+}
