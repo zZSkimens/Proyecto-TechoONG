@@ -1,12 +1,17 @@
 import { createObra, getObras, getObraById } from "../services/obra.service.js";
 
+function omitFechaFields(entity) {
+  const { created_at, updated_at, ...rest } = entity;
+  return rest;
+}
+
 export async function createObraController(req, res) {
   try {
     const data = req.body;
     const obra = await createObra(data);
     res.status(201).json({
       message: "Obra creada exitosamente",
-      data: obra
+      data: omitFechaFields(obra)
     });
   } catch (error) {
     res.status(500).json({ message: "Error al crear obra", error: error.message });
@@ -16,7 +21,7 @@ export async function createObraController(req, res) {
 export async function getObrasController(req, res) {
   try {
     const obras = await getObras();
-    res.status(200).json({ data: obras });
+    res.status(200).json({ data: obras.map(omitFechaFields) });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener obras", error: error.message });
   }
@@ -29,7 +34,7 @@ export async function getObraByIdController(req, res) {
     if (!obra) {
       return res.status(404).json({ message: "Obra no encontrada" });
     }
-    res.status(200).json({ data: obra });
+    res.status(200).json({ data: omitFechaFields(obra) });
   } catch (error) {
     res.status(500).json({ message: "Error al obtener obra", error: error.message });
   }
