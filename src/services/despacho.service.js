@@ -10,21 +10,21 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
   await queryRunner.startTransaction();
 
   try {
-    // 1. Verificar Cuadrilla
+    // 1. Verificamos la cuadrilla
     const cuadrilla = await queryRunner.manager.findOneBy(Cuadrilla, { id: cuadrillaId });
     if (!cuadrilla) {
       throw new Error("La cuadrilla no existe");
     }
 
-    // 2. Crear registro de Despacho
+    // 2. Creamos el registro de Despacho
     const despacho = queryRunner.manager.create(Despacho, {
       cuadrilla: cuadrillaId
     });
-    const savedDespacho = await queryRunner.manager.save(despacho);
+    const savedDespacho = await queryRunner.manager.save(Despacho, despacho);
 
     const despachoItemsDetails = [];
 
-    // 3. Procesar items y validar stock
+    // 3. Procesamos los items y validamos el stock
     for (const reqItem of itemsToDispatch) {
       const item = await queryRunner.manager.findOneBy(Item, { id: reqItem.itemId });
       if (!item) {
@@ -35,21 +35,21 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
         throw new Error(`Stock insuficiente para el item '${item.name}'. Stock actual: ${item.stock}, Solicitado: ${reqItem.cantidad}`);
       }
 
-      // Descontar stock
+      // Descuenta el stock
       item.stock -= reqItem.cantidad;
       await queryRunner.manager.save(Item, item);
 
-      // Crear registro de DespachoItem
+      // Crea el registro de en el DespachoItem
       const despachoItem = queryRunner.manager.create(DespachoItem, {
         despacho: savedDespacho.id,
         item: item.id,
         cantidad: reqItem.cantidad
       });
-      const savedDespachoItem = await queryRunner.manager.save(despachoItem);
+      const savedDespachoItem = await queryRunner.manager.save(DespachoItem, despachoItem);
       despachoItemsDetails.push({ ...savedDespachoItem, item_name: item.name });
     }
 
-    // 4. Confirmar transacción
+    // 4. Confirmamos la transacción de items (Herramientas y Materiales)
     await queryRunner.commitTransaction();
 
     return {
@@ -76,7 +76,6 @@ export async function getDespachos() {
 export async function getDespachosByCuadrilla(cuadrillaId) {
   const despachoRepository = AppDataSource.getRepository(Despacho);
   const despachoItemRepository = AppDataSource.getRepository(DespachoItem);
-  
   const despachos = await despachoRepository.find({
     where: { cuadrilla: { id: cuadrillaId } },
     relations: ["cuadrilla"],
@@ -84,14 +83,14 @@ export async function getDespachosByCuadrilla(cuadrillaId) {
 
   for (const d of despachos) {
     const items = await despachoItemRepository.find({
-       where: { despacho: { id: d.id } },
-       relations: ["item"]
+      where: { despacho: { id: d.id } },
+      relations: ["item"]
     });
     d.items = items.map(di => ({
-       id: di.item.id,
-       name: di.item.name,
-       category: di.item.category,
-       cantidad: di.cantidad
+      id: di.item.id,
+      name: di.item.name,
+      category: di.item.category,
+      cantidad: di.cantidad
     }));
   }
 
@@ -118,11 +117,11 @@ export async function devolverItems(despachoId, itemsDevueltos) {
       });
 
       if (!despachoItem) {
-         throw new Error(`El item con ID ${reqItem.itemId} no forma parte de este despacho.`);
+        throw new Error(`El item con ID ${reqItem.itemId} no forma parte de este despacho.`);
       }
 
       if (reqItem.cantidad > despachoItem.cantidad) {
-          throw new Error(`No se puede devolver más cantidad de la que fue despachada para el item ID ${reqItem.itemId}.`);
+        throw new Error(`No se puede devolver más cantidad de la que fue despachada para el item ID ${reqItem.itemId}.`);
       }
 
       const item = await queryRunner.manager.findOneBy(Item, { id: reqItem.itemId });
@@ -130,7 +129,7 @@ export async function devolverItems(despachoId, itemsDevueltos) {
         throw new Error(`El item con ID ${reqItem.itemId} no existe`);
       }
 
-      // Re-ingresar stock
+      // Re-ingresa el stock
       item.stock += reqItem.cantidad;
       await queryRunner.manager.save(Item, item);
 

@@ -7,14 +7,16 @@ export async function createUser(data) {
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
   const newUser = userRepository.create({
-    email: data.email,
+    rut: data.rut,
+    name: data.name,
     password: hashedPassword,
+    role: data.role || "user",
   });
 
   return await userRepository.save(newUser);
 }
 
-export async function findUserByEmail(email) {
+export async function findUserByRut(rut) {
   const userRepository = AppDataSource.getRepository(User);
-  return await userRepository.findOneBy({ email });
+  return await userRepository.findOneBy({ rut });
 }

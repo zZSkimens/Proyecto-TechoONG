@@ -15,6 +15,28 @@ export const Cuadrilla = new EntitySchema({
       nullable: false,
       unique: true,
     },
+    encargado: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    zona_afectada: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    voluntarios: {
+      type: "simple-array",
+      nullable: true,
+    },
+    modo_emergencia: {
+      type: "boolean",
+      default: false,
+    },
+    max_voluntarios: {
+      type: "int",
+      default: 6,
+    },
     created_at: {
       type: "timestamp",
       createDate: true,
