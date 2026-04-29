@@ -32,7 +32,7 @@ export async function getMatchForProject(obraId) {
   const matches = voluntariosDisponibles.map(voluntario => {
     const voluntarioHabilidadesIds = voluntario.habilidades.map(h => h.id);
     const coincidencias = requeridasIds.filter(id => voluntarioHabilidadesIds.includes(id));
-    
+
     return {
       voluntario,
       matchCount: coincidencias.length,

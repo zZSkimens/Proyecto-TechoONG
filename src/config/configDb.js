@@ -1,6 +1,9 @@
 "use strict";
 import { DataSource } from "typeorm";
 import { DATABASE, DB_USERNAME, HOST, PASSWORD, DB_PORT } from "./configEnv.js";
+import { Voluntario } from "../entities/voluntario.entity.js";
+import { Habilidad } from "../entities/habilidad.entity.js";
+import { Obra } from "../entities/obra.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -9,7 +12,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${PASSWORD}`,
   database: `${DATABASE}`,
-  entities: ["src/entities/**/*.js"],
+  entities: [Voluntario, Habilidad, Obra],
   synchronize: true, 
   logging: false,
 });
