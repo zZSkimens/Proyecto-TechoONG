@@ -41,3 +41,21 @@ export async function obtenerTodosLosPerfiles(filtros = {}) {
 
   return await query.getMany();
 }
+
+export async function cambiarEstadoPerfil(perfilId, estado, zonaAsignada = null) {
+  const perfil = await perfilRepository.findOne({
+    where: { id: perfilId },
+    relations: ["user"] // Traemos el usuario para poder enviarle la notificación
+  });
+
+  if (!perfil) {
+    return null;
+  }
+
+  perfil.estado = estado;
+  if (zonaAsignada) {
+    perfil.zona_asignada = zonaAsignada;
+  }
+
+  return await perfilRepository.save(perfil);
+}

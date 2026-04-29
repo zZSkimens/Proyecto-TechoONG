@@ -42,6 +42,17 @@ export const Perfil = new EntitySchema({
       type: "json",
       nullable: true,
     },
+    estado: {
+      type: "varchar",
+      length: 50,
+      nullable: false,
+      default: "pendiente",
+    },
+    zona_asignada: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
     creado_en: {
       type: "timestamp",
       createDate: true,
