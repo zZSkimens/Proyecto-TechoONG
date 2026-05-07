@@ -1,5 +1,6 @@
 import { EntitySchema } from "typeorm";
 
+//Creacion de nueva entidad para manejar los items devueltos
 export const ActaDevolucion = new EntitySchema({
   name: "ActaDevolucion",
   tableName: "acta_devolucion",
