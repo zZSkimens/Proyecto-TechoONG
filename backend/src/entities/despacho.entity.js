@@ -9,6 +9,11 @@ export const Despacho = new EntitySchema({
       type: "int",
       generated: "increment",
     },
+    estado: {
+      type: "enum",
+      enum: ["Pendiente", "Devuelto"],
+      default: "Pendiente",
+    },
     created_at: {
       type: "timestamp",
       createDate: true,

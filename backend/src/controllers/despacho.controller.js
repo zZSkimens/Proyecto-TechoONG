@@ -55,15 +55,22 @@ export async function devolverItemsController(req, res) {
     }
 
     for (const item of items) {
-      if (!item.itemId || !item.cantidad || typeof item.cantidad !== 'number' || item.cantidad <= 0) {
-        return handleErrorClient(res, 400, "Cada item devuelto debe tener 'itemId' y una 'cantidad' válida mayor a cero");
+      if (!item.itemId || !item.estados || typeof item.estados !== 'object') {
+        return handleErrorClient(res, 400, "Cada item devuelto debe tener 'itemId' y un objeto 'estados' detallando las cantidades ('Disponible', 'Dañada', 'Extraviada')");
       }
     }
 
     const devoluciones = await devolverItems(parseInt(id), items);
-    handleSuccess(res, 200, "Ítems devueltos exitosamente al inventario", devoluciones);
+    handleSuccess(res, 200, "Ítems devueltos exitosamente al inventario y acta generada", devoluciones);
   } catch (error) {
-    if (error.message.includes("no existe") || error.message.includes("no forma parte") || error.message.includes("más cantidad")) {
+    if (
+      error.message.includes("no existe") ||
+      error.message.includes("Falta información de estados") ||
+      error.message.includes("La cantidad total devuelta") ||
+      error.message.includes("Este despacho ya ha sido devuelto") ||
+      error.message.includes("No se puede devolver más cantidad") ||
+      error.message.includes("no forma parte")
+    ) {
       return handleErrorClient(res, 400, error.message);
     }
     handleErrorServer(res, 500, "Error interno al procesar la devolución", error.message);
