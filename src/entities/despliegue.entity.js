@@ -27,7 +27,7 @@ export const Despliegue = new EntitySchema({
   relations: {
     cuadrilla: {
       target: "Cuadrilla",
-      type: "one-to-one",
+      type: "many-to-one",
       joinColumn: {
         name: "cuadrilla_id",
         referencedColumnName: "id",
