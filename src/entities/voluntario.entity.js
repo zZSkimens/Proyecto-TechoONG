@@ -40,16 +40,7 @@ export const Voluntario = new EntitySchema({
       type: "boolean",
       default: true,
     },
-    created_at: {
-      type: "timestamp",
-      createDate: true,
-      default: () => "CURRENT_TIMESTAMP",
-    },
-    updated_at: {
-      type: "timestamp",
-      updateDate: true,
-      default: () => "CURRENT_TIMESTAMP",
-    },
+
   },
   relations: {
     cuadrillas: {

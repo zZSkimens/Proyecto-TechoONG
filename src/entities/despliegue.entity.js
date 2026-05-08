@@ -22,16 +22,7 @@ export const Despliegue = new EntitySchema({
       length: 50,
       default: "pendiente", // pendiente, en_camino, finalizado
     },
-    created_at: {
-      type: "timestamp",
-      createDate: true,
-      default: () => "CURRENT_TIMESTAMP",
-    },
-    updated_at: {
-      type: "timestamp",
-      updateDate: true,
-      default: () => "CURRENT_TIMESTAMP",
-    },
+
   },
   relations: {
     cuadrilla: {

@@ -23,15 +23,6 @@ export const Sector = new EntitySchema({
       type: "text",
       nullable: true,
     },
-    created_at: {
-      type: "timestamp",
-      createDate: true,
-      default: () => "CURRENT_TIMESTAMP",
-    },
-    updated_at: {
-      type: "timestamp",
-      updateDate: true,
-      default: () => "CURRENT_TIMESTAMP",
-    },
+
   },
 });
