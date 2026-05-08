@@ -1,8 +1,8 @@
 import { EntitySchema } from "typeorm";
 
-export const Voluntario = new EntitySchema({
-  name: "Voluntario",
-  tableName: "voluntarios",
+export const Chofer = new EntitySchema({
+  name: "Chofer",
+  tableName: "choferes",
   columns: {
     id: {
       primary: true,
@@ -25,20 +25,15 @@ export const Voluntario = new EntitySchema({
       unique: true,
       nullable: false,
     },
-    correo: {
+    telefono: {
       type: "varchar",
-      length: 255,
-      unique: true,
-      nullable: false,
-    },
-    password: {
-      type: "varchar",
-      length: 255,
+      length: 20,
       nullable: true,
     },
-    disponible: {
-      type: "boolean",
-      default: true,
+    licencia_conducir: {
+      type: "varchar",
+      length: 50,
+      nullable: true,
     },
     created_at: {
       type: "timestamp",
@@ -49,23 +44,6 @@ export const Voluntario = new EntitySchema({
       type: "timestamp",
       updateDate: true,
       default: () => "CURRENT_TIMESTAMP",
-    },
-  },
-  relations: {
-    cuadrillas: {
-      target: "Cuadrilla",
-      type: "many-to-many",
-      joinTable: {
-        name: "cuadrilla_voluntarios",
-        joinColumn: {
-          name: "voluntario_id",
-          referencedColumnName: "id",
-        },
-        inverseJoinColumn: {
-          name: "cuadrilla_id",
-          referencedColumnName: "id",
-        },
-      },
     },
   },
 });

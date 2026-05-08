@@ -1,8 +1,8 @@
 import { EntitySchema } from "typeorm";
 
-export const Obra = new EntitySchema({
-  name: "Obra",
-  tableName: "obras",
+export const Cuadrilla = new EntitySchema({
+  name: "Cuadrilla",
+  tableName: "cuadrillas",
   columns: {
     id: {
       primary: true,
@@ -13,20 +13,6 @@ export const Obra = new EntitySchema({
       type: "varchar",
       length: 255,
       nullable: false,
-    },
-    descripcion: {
-      type: "text",
-      nullable: true,
-    },
-    ubicacion: {
-      type: "varchar",
-      length: 255,
-      nullable: true,
-    },
-    estado: {
-      type: "varchar",
-      length: 50,
-      default: "pendiente", // pendiente, en_curso, finalizada
     },
     created_at: {
       type: "timestamp",
@@ -40,17 +26,26 @@ export const Obra = new EntitySchema({
     },
   },
   relations: {
-    habilidadesRequeridas: {
-      target: "Habilidad",
+    sector: {
+      target: "Sector",
+      type: "many-to-one",
+      joinColumn: {
+        name: "sector_id",
+        referencedColumnName: "id",
+      },
+      onDelete: "SET NULL",
+    },
+    voluntarios: {
+      target: "Voluntario",
       type: "many-to-many",
       joinTable: {
-        name: "obra_habilidades",
+        name: "cuadrilla_voluntarios",
         joinColumn: {
-          name: "obra_id",
+          name: "cuadrilla_id",
           referencedColumnName: "id",
         },
         inverseJoinColumn: {
-          name: "habilidad_id",
+          name: "voluntario_id",
           referencedColumnName: "id",
         },
       },

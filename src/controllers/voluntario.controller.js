@@ -1,7 +1,7 @@
 import { createVoluntario, getVoluntarios, getVoluntarioById } from "../services/voluntario.service.js";
 
 function omitFechaFields(entity) {
-  const { created_at, updated_at, ...rest } = entity;
+  const { created_at, updated_at, password, ...rest } = entity;
   return rest;
 }
 

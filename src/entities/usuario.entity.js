@@ -1,23 +1,24 @@
 import { EntitySchema } from "typeorm";
 
-export const Habilidad = new EntitySchema({
-  name: "Habilidad",
-  tableName: "habilidades",
+export const Usuario = new EntitySchema({
+  name: "Usuario",
+  tableName: "usuarios",
   columns: {
     id: {
       primary: true,
       type: "int",
       generated: "increment",
     },
-    nombre: {
+    correo: {
       type: "varchar",
-      length: 100,
+      length: 255,
       unique: true,
       nullable: false,
     },
-    descripcion: {
-      type: "text",
-      nullable: true,
+    password: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
     },
     created_at: {
       type: "timestamp",
