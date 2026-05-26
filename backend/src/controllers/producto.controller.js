@@ -1,12 +1,4 @@
-import {
-  findProductos,
-  findProductoById,
-  createProducto,
-  updateProducto,
-  deleteProducto,
-  verificarDisponibilidadStock,
-  findMovimientos,
-} from "../services/producto.service.js";
+import {findProductos,findProductoById,createProducto,updateProducto,deleteProducto,verificarDisponibilidadStock, findMovimientos,} from "../services/producto.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export async function getAllProductos(req, res) {
