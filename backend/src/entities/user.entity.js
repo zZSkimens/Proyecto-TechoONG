@@ -20,6 +20,12 @@ export const User = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    role: {
+      type: "enum",
+      enum: ["jefe_cuadrilla", "enc_alimentacion", "bodega", "admin"],
+      default: "jefe_cuadrilla",
+      nullable: false,
+    },
     created_at: {
       type: "timestamp",
       createDate: true,
