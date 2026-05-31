@@ -12,19 +12,19 @@ npm install
 cd ../frontend
 npm install
 
-Para el backend se utiliza
+# Para el backend se utiliza
 
 Node.js
 Express
 PostgreSQL
 Git
 
-Para el frontend se utiliza:
+# Para el frontend se utiliza:
 
 React
 Tailwind
 
-Configuración .env
+# Configuración .env
 Para ejecutar el backend, se requiere el siguiente formato en el archivo .env
 
 HOST = (localhost | IP)
