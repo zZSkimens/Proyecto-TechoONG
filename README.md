@@ -2,7 +2,7 @@
 Este repositorio contiene el proyecto semestral del ramo Ingeniería de Software. El proyecto consiste en un sistema centralizado diseñado para optimizar la planificación, despacho y seguimiento logístico en la construcción de viviendas de emergencia. Este proyecto busca conectar la necesidad operativa en sectores afectados con los recursos humanos y materiales disponibles, garantizando eficiencia, trazabilidad y seguridad en cada despliegue.
 
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/Proyecto-TechoONG.git
+git clone https://github.com/zZSkimens/Proyecto-TechoONG.git
 
 # Entrar al directorio del backend e instalar dependencias
 cd backend
