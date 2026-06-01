@@ -9,6 +9,7 @@ export const Cuadrilla = new EntitySchema({
       type: "int",
       generated: "increment",
     },
+<<<<<<< HEAD:backend/src/entities/cuadrilla.entity.js
     name: {
       type: "varchar",
       length: 255,
@@ -16,10 +17,14 @@ export const Cuadrilla = new EntitySchema({
       unique: true,
     },
     encargado: {
+=======
+    nombre: {
+>>>>>>> angelo:src/entities/cuadrilla.entity.js
       type: "varchar",
       length: 255,
       nullable: false,
     },
+<<<<<<< HEAD:backend/src/entities/cuadrilla.entity.js
     zona_afectada: {
       type: "varchar",
       length: 255,
@@ -46,6 +51,35 @@ export const Cuadrilla = new EntitySchema({
       type: "timestamp",
       updateDate: true,
       default: () => "CURRENT_TIMESTAMP",
+=======
+
+  },
+  relations: {
+    sector: {
+      target: "Sector",
+      type: "many-to-one",
+      joinColumn: {
+        name: "sector_id",
+        referencedColumnName: "id",
+      },
+      onDelete: "SET NULL",
+    },
+    voluntarios: {
+      target: "Voluntario",
+      type: "many-to-many",
+      joinTable: {
+        name: "cuadrilla_voluntarios",
+        joinColumn: {
+          name: "cuadrilla_id",
+          referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+          name: "voluntario_id",
+          referencedColumnName: "id",
+        },
+      },
+      cascade: true,
+>>>>>>> angelo:src/entities/cuadrilla.entity.js
     },
   },
 });

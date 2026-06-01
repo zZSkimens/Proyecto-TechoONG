@@ -1,9 +1,14 @@
-import { loginUser } from "../services/auth.service.js";
-import { createUser } from "../services/user.service.js";
-import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
+import { registerUsuario, authenticateUsuario, generateAuthToken } from "../services/auth.service.js";
 
-export async function login(req, res) {
+function omitSensitiveFields(usuario) {
+  if (!usuario) return null;
+  const { password, created_at, updated_at, ...rest } = usuario;
+  return rest;
+}
+
+export async function registerController(req, res) {
   try {
+<<<<<<< HEAD:backend/src/controllers/auth.controller.js
     const { rut, password } = req.body;
 
     if (!rut || !password) {
@@ -12,13 +17,24 @@ export async function login(req, res) {
 
     const data = await loginUser(rut, password);
     handleSuccess(res, 200, "Login exitoso", data);
+=======
+    const usuario = await registerUsuario(req.body);
+    res.status(201).json({
+      message: "Registro exitoso",
+      data: omitSensitiveFields(usuario),
+    });
+>>>>>>> angelo:src/controllers/auth.controller.js
   } catch (error) {
-    handleErrorClient(res, 401, error.message);
+    const status = error.status || 500;
+    res.status(status).json({
+      message: error.message || "Error en el registro",
+    });
   }
 }
 
-export async function register(req, res) {
+export async function loginController(req, res) {
   try {
+<<<<<<< HEAD:backend/src/controllers/auth.controller.js
     const data = req.body;
 
     if (!data.rut || !data.password || !data.name) {
@@ -46,5 +62,29 @@ export async function register(req, res) {
     } else {
       handleErrorServer(res, 500, "Error interno del servidor", error.message);
     }
+=======
+    const { correo, password } = req.body;
+
+    if (!correo || !password) {
+      return res.status(400).json({ message: "Correo y contraseña son obligatorios" });
+    }
+
+    const usuario = await authenticateUsuario(correo, password);
+    if (!usuario) {
+      return res.status(401).json({ message: "Correo o contraseña incorrectos" });
+    }
+
+    const token = generateAuthToken(usuario);
+
+    res.status(200).json({
+      message: "Inicio de sesión exitoso",
+      data: {
+        token,
+        usuario: omitSensitiveFields(usuario),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al iniciar sesión", error: error.message });
+>>>>>>> angelo:src/controllers/auth.controller.js
   }
 }
