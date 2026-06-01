@@ -1,0 +1,33 @@
+.comprobante {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-top: var(--space-lg);
+  animation: fadeIn 0.3s ease;
+}
+
+.comprobante-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.comprobante-header h3 {
+  color: var(--success);
+  font-size: 16px;
+}
+
+.comprobante-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.comprobante-items {
+  margin-top: var(--space-md);
+}
