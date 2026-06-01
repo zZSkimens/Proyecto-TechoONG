@@ -1,5 +1,8 @@
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import { obtenerPerfilPorUsuario, crearOActualizarPerfil, obtenerTodosLosPerfiles as serviceObtenerTodos, cambiarEstadoPerfil } from "../services/perfil.service.js";
+import { AppDataSource } from "../config/configDB.js";
+import { Perfil } from "../entities/perfil.entity.js";
+import { HistorialEstado } from "../entities/historialEstado.entity.js";
 
 export async function obtenerMiPerfil(req, res) {
   try {
@@ -19,9 +22,11 @@ export async function obtenerMiPerfil(req, res) {
 export async function actualizarMiPerfil(req, res) {
   try {
     const userId = req.user.id;
-    const datosPerfil = req.body;
+    const { nombre_completo, telefono, rol, informacion_profesional, informacion_academica, competencias, certificaciones } = req.body;
+    
+    const datosFiltrados = { nombre_completo, telefono, rol, informacion_profesional, informacion_academica, competencias, certificaciones };
 
-    const perfilActualizado = await crearOActualizarPerfil(userId, datosPerfil);
+    const perfilActualizado = await crearOActualizarPerfil(userId, datosFiltrados);
 
     handleSuccess(res, 200, "Perfil actualizado exitosamente", perfilActualizado);
   } catch (error) {
@@ -31,7 +36,6 @@ export async function actualizarMiPerfil(req, res) {
 
 export async function obtenerTodosLosPerfiles(req, res) {
   try {
-    // Aceptamos query params para filtrar (ej: ?rol=voluntario&competencia=JavaScript)
     const filtros = req.query;
     const perfiles = await serviceObtenerTodos(filtros);
 
@@ -44,33 +48,53 @@ export async function obtenerTodosLosPerfiles(req, res) {
 export async function validarPerfilPostulante(req, res) {
   try {
     const { id } = req.params;
-    const { estado, zona_asignada } = req.body;
+    const { estado, zona_asignada, comentario } = req.body;
 
-    // Validación básica de estado
-    const estadosValidos = ["pendiente", "activo", "rechazado"];
+    const estadosValidos = [
+      "registrado",
+      "documentacion_pendiente",
+      "entrevista_agendada",
+      "en_capacitacion",
+      "habilitado",
+      "rechazado",
+    ];
     if (!estadosValidos.includes(estado)) {
-      return handleErrorClient(res, 400, "Estado inválido. Debe ser pendiente, activo o rechazado.", null);
+      return handleErrorClient(res, 400, "Estado inválido. Debe ser registrado, documentacion_pendiente, entrevista_agendada, en_capacitacion, habilitado o rechazado.", null);
     }
 
-    const perfilActualizado = await cambiarEstadoPerfil(id, estado, zona_asignada);
+    const perfilRepository = AppDataSource.getRepository(Perfil);
+    const perfil = await perfilRepository.findOneBy({ id: parseInt(id) });
 
-    if (!perfilActualizado) {
+    if (!perfil) {
       return handleErrorClient(res, 404, "Perfil no encontrado", null);
     }
 
-    // Simulación de notificación
+    const estadoAnterior = perfil.estado;
+
+    const perfilActualizado = await cambiarEstadoPerfil(id, estado, zona_asignada);
+
+    const historialRepository = AppDataSource.getRepository(HistorialEstado);
+    const auditoria = historialRepository.create({
+      perfil_id: perfilActualizado.id,
+      estado_anterior: estadoAnterior,
+      estado_nuevo: estado,
+      cambiado_por_id: req.user.id,
+      comentario: comentario || "Cambio de estado por el administrador",
+    });
+    await historialRepository.save(auditoria);
+
+    // Simulación de envío de correo/notificación
     if (perfilActualizado.user) {
       console.log(`\n================ NOTIFICACIÓN ================`);
       console.log(`Para: ${perfilActualizado.user.email}`);
       console.log(`Asunto: Actualización de estado de postulación`);
       console.log(`Mensaje: Tu postulación ahora está en estado: ${estado.toUpperCase()}.`);
-      if (estado === "activo" && zona_asignada) {
+      if (estado === "habilitado" && zona_asignada) {
         console.log(`Se te ha asignado la zona geográfica: ${zona_asignada}`);
       }
       console.log(`================================================\n`);
     }
 
-    // Evitar enviar el objeto user completo en la respuesta
     const respuesta = { ...perfilActualizado };
     delete respuesta.user;
 
