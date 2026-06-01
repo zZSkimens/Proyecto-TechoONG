@@ -1,8 +1,8 @@
 import { EntitySchema } from "typeorm";
 
-export const User = new EntitySchema({
-  name: "User",
-  tableName: "users",
+export const Item = new EntitySchema({
+  name: "Item",
+  tableName: "items",
   columns: {
     id: {
       primary: true,
@@ -14,28 +14,15 @@ export const User = new EntitySchema({
       length: 255,
       nullable: false,
     },
-    rut: {
-      type: "varchar",
-      length: 20,
-      unique: true,
-      nullable: false,
-    },
-    password: {
-      type: "varchar",
-      length: 255,
-      nullable: false,
-    },
-    role: {
-<<<<<<< HEAD
+    category: {
       type: "enum",
-      enum: ["jefe_cuadrilla", "enc_alimentacion", "bodega", "admin"],
-      default: "jefe_cuadrilla",
+      enum: ["Herramienta", "Material"],
       nullable: false,
-=======
-      type: "varchar",
-      length: 50,
-      default: "user",
->>>>>>> Bryan
+    },
+    stock: {
+      type: "int",
+      default: 0,
+      nullable: false,
     },
     created_at: {
       type: "timestamp",
