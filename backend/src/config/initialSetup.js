@@ -1,4 +1,4 @@
-import { AppDataSource } from "./configDb.js";
+import { AppDataSource } from "./configDB.js";
 import { User } from "../entities/user.entity.js";
 import bcrypt from "bcrypt";
 

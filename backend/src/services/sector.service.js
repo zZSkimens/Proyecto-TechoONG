@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDb.js";
+import { AppDataSource } from "../config/configDB.js";
 import { Sector } from "../entities/sector.entity.js";
 
 export async function createSectorService(sectorData) {

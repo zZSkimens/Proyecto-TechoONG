@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { AppDataSource } from "../config/configDb.js";
+import { AppDataSource } from "../config/configDB.js";
 import { Voluntario } from "../entities/voluntario.entity.js";
 import { Cuadrilla } from "../entities/cuadrilla.entity.js";
 import { In } from "typeorm";

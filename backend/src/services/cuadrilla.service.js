@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDb.js";
+import { AppDataSource } from "../config/configDB.js";
 import { Cuadrilla } from "../entities/cuadrilla.entity.js";
 
 export async function createCuadrilla(data) {
