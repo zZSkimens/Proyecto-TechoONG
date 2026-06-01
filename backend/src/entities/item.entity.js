@@ -34,5 +34,18 @@ export const Item = new EntitySchema({
       updateDate: true,
       default: () => "CURRENT_TIMESTAMP",
     },
+    rol: {
+      type: "varchar",
+      length: 50,
+      nullable: false,
+      default: "user",
+    },
+  },
+  relations: {
+    perfil: {
+      target: "Perfil",
+      type: "one-to-one",
+      inverseSide: "user",
+    },
   },
 });

@@ -26,11 +26,18 @@ export async function register(req, res) {
     }
 
     const newUser = await createUser(data);
+<<<<<<< HEAD:backend/src/controllers/auth.controller.js
     delete newUser.password; 
     handleSuccess(res, 201, "Usuario registrado exitosamente", newUser);
   } catch (error) {
 <<<<<<< HEAD
     if (error.code === '23505') { 
+=======
+    delete newUser.password;
+    handleSuccess(res, 201, "Usuario registrado exitosamente", newUser);
+  } catch (error) {
+    if (error.code === '23505') {
+>>>>>>> Vicente:src/controllers/auth.controller.js
       handleErrorClient(res, 409, "El email ya está registrado");
 =======
     if (error.code === '23505') { // Código de error de PostgreSQL
