@@ -6,14 +6,11 @@ import { obtenerMiPerfil, actualizarMiPerfil, obtenerTodosLosPerfiles, validarPe
 
 const router = Router();
 
-// Todas las rutas de perfil requieren autenticación
 router.use(authMiddleware);
 
-// Rutas para usuarios normales (ver/editar su propio perfil)
 router.get("/mi-perfil", obtenerMiPerfil);
 router.post("/mi-perfil", validarPerfil, actualizarMiPerfil);
 
-// Rutas para administradores
 router.get("/", adminMiddleware, obtenerTodosLosPerfiles);
 router.patch("/:id/validar", adminMiddleware, validarPerfilPostulante);
 
