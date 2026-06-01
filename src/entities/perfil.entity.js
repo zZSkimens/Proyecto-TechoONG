@@ -42,11 +42,15 @@ export const Perfil = new EntitySchema({
       type: "json",
       nullable: true,
     },
+    certificaciones: {
+      type: "json",
+      nullable: true,
+    },
     estado: {
       type: "varchar",
       length: 50,
       nullable: false,
-      default: "pendiente",
+      default: "registrado",
     },
     zona_asignada: {
       type: "varchar",
@@ -70,6 +74,11 @@ export const Perfil = new EntitySchema({
       type: "one-to-one",
       joinColumn: { name: "user_id" },
       onDelete: "CASCADE",
+    },
+    perfilCapacitaciones: {
+      target: "PerfilCapacitacion",
+      type: "one-to-many",
+      inverseSide: "perfil",
     },
   },
 });
