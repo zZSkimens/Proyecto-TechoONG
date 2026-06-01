@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
-import { AppDataSource, connectDB } from "./config/configDb.js";
+import { AppDataSource, connectDB } from "./config/configDB.js";
 import { routerApi } from "./routes/index.routes.js";
 import { createInitialUsers } from "./config/initialSetup.js";
 
@@ -13,16 +13,10 @@ app.get("/", (req, res) => {
 });
 
 connectDB()
-<<<<<<< HEAD
-  .then(() => {
-    routerApi(app);
-
-=======
   .then(async () => {
     // Siembra los usuarios por defecto (Configuración Inicial)
     await createInitialUsers();
     routerApi(app);
->>>>>>> Bryan
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
       console.log(`Servidor iniciado en http://localhost:${PORT}`);

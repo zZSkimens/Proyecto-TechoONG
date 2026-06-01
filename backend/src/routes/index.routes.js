@@ -8,6 +8,13 @@ import recepcionEntregaRoutes from "./recepcion_entrega.routes.js";
 import itemRoutes from "./item.routes.js";
 import cuadrillaRoutes from "./cuadrilla.routes.js";
 import despachoRoutes from "./despacho.routes.js";
+import capacitacionRoutes from "./capacitacion.routes.js";
+import choferRoutes from "./chofer.routes.js";
+import despliegueRoutes from "./despliegue.routes.js";
+import obraRoutes from "./obra.routes.js";
+import perfilRoutes from "./perfil.routes.js";
+import sectorRoutes from "./sector.routes.js";
+import voluntarioRoutes from "./voluntario.routes.js";
 
 export function routerApi(app) {
   const router = Router();
@@ -21,4 +28,11 @@ export function routerApi(app) {
   router.use("/items", itemRoutes);
   router.use("/cuadrillas", cuadrillaRoutes);
   router.use("/despachos", despachoRoutes);
+  router.use("/capacitaciones", capacitacionRoutes);
+  router.use("/choferes", choferRoutes);
+  router.use("/despliegues", despliegueRoutes);
+  router.use("/obras", obraRoutes);
+  router.use("/perfiles", perfilRoutes);
+  router.use("/sectores", sectorRoutes);
+  router.use("/voluntarios", voluntarioRoutes);
 }

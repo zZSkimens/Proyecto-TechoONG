@@ -9,11 +9,7 @@ export const Usuario = new EntitySchema({
       type: "int",
       generated: "increment",
     },
-<<<<<<<< HEAD:backend/src/entities/user.entity.js
     name: {
-========
-    correo: {
->>>>>>>> angelo:backend/src/entities/usuario.entity.js
       type: "varchar",
       length: 255,
       nullable: false,
@@ -29,18 +25,10 @@ export const Usuario = new EntitySchema({
       length: 255,
       nullable: false,
     },
-<<<<<<<< HEAD:backend/src/entities/user.entity.js
     role: {
-<<<<<<< HEAD
-      type: "enum",
-      enum: ["jefe_cuadrilla", "enc_alimentacion", "bodega", "admin"],
-      default: "jefe_cuadrilla",
-      nullable: false,
-=======
       type: "varchar",
       length: 50,
       default: "user",
->>>>>>> Bryan
     },
     created_at: {
       type: "timestamp",
@@ -52,8 +40,5 @@ export const Usuario = new EntitySchema({
       updateDate: true,
       default: () => "CURRENT_TIMESTAMP",
     },
-========
-
->>>>>>>> angelo:backend/src/entities/usuario.entity.js
   },
 });
