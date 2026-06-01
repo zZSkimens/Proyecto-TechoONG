@@ -11,11 +11,9 @@ export async function crearOActualizarPerfil(userId, datosPerfil) {
   let perfil = await obtenerPerfilPorUsuario(userId);
 
   if (perfil) {
-    // Actualizar perfil existente
     perfilRepository.merge(perfil, datosPerfil);
     return await perfilRepository.save(perfil);
   } else {
-    // Crear nuevo perfil
     const nuevoPerfil = perfilRepository.create({
       user_id: userId,
       ...datosPerfil,
@@ -26,13 +24,12 @@ export async function crearOActualizarPerfil(userId, datosPerfil) {
 
 export async function obtenerTodosLosPerfiles(filtros = {}) {
   const query = perfilRepository.createQueryBuilder("perfil")
-    .leftJoinAndSelect("perfil.user", "user"); // Traer el usuario asociado gracias a la nueva relación
+    .leftJoinAndSelect("perfil.user", "user");
 
   if (filtros.rol) {
     query.andWhere("perfil.rol = :rol", { rol: filtros.rol });
   }
 
-  // Búsqueda simple en el JSON convertido a texto (específico para PostgreSQL)
   if (filtros.competencia) {
     query.andWhere("perfil.competencias::text ILIKE :competencia", { 
       competencia: `%${filtros.competencia}%` 
@@ -45,7 +42,7 @@ export async function obtenerTodosLosPerfiles(filtros = {}) {
 export async function cambiarEstadoPerfil(perfilId, estado, zonaAsignada = null) {
   const perfil = await perfilRepository.findOne({
     where: { id: perfilId },
-    relations: ["user"] // Traemos el usuario para poder enviarle la notificación
+    relations: ["user"]
   });
 
   if (!perfil) {
