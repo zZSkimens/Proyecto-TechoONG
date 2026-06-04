@@ -16,7 +16,12 @@ export async function getCuadrillas() {
   // Para cada cuadrilla, buscamos sus items despachados
   for (const cuadrilla of cuadrillas) {
     const items = await despachoItemRepository.find({
-      where: { despacho: { cuadrilla: { id: cuadrilla.id } } },
+      where: { 
+        despacho: { 
+          cuadrilla: { id: cuadrilla.id },
+          estado: "Pendiente"
+        } 
+      },
       relations: ["item"]
     });
 
