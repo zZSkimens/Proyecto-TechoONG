@@ -1,5 +1,6 @@
 import { AppDataSource } from "./configDb.js";
 import { User } from "../entities/user.entity.js";
+import { Obra } from "../entities/obra.entity.js";
 import bcrypt from "bcrypt";
 
 export async function createInitialUsers() {
@@ -37,11 +38,12 @@ export async function createInitialUsers() {
       role: "voluntario"
     },
     {
-      rut: "22222222-2",
-      name: "Coordinador de Viajes",
-      password: "viajes",
-      role: "coordinador_viajes"
+      rut: "12345678-9",
+      name: "Pedro Coordinador",
+      password: "123456",
+      role: "jefe_cuadrilla"
     }
+
   ];
 
   for (const userData of usersToSeed) {
@@ -54,6 +56,41 @@ export async function createInitialUsers() {
       });
       await userRepository.save(user);
       console.log(`=> Configuración Inicial: Usuario creado: ${userData.name} (Rol: ${userData.role})`);
+    }
+  }
+
+  // Seed de Obras de prueba
+  const obraRepository = AppDataSource.getRepository(Obra);
+  const existingObras = await obraRepository.find();
+  if (existingObras.length === 0) {
+    const obrasToSeed = [
+      {
+        nombre: "Construcción Viviendas de Emergencia - Valparaíso",
+        descripcion: "Construcción y techado rápido para campamento afectado por incendios.",
+        zona: "Valparaíso",
+        competencias_requeridas: ["Carpintería", "Electricidad", "Liderazgo de Equipos"],
+        certificaciones_requeridas: ["Curso Prevención de Riesgos", "Primeros Auxilios"]
+      },
+      {
+        nombre: "Reconstrucción Comunitaria - Santiago Centro",
+        descripcion: "Mejoramiento e instalación sanitaria en centro sociocomunitario.",
+        zona: "Santiago",
+        competencias_requeridas: ["Albañilería", "Pintura", "Fontanería/Plomería"],
+        certificaciones_requeridas: ["Primeros Auxilios Avanzado"]
+      },
+      {
+        nombre: "Techado Social - Biobío",
+        descripcion: "Instalación de planchas y estructuras metálicas de soporte.",
+        zona: "Biobío",
+        competencias_requeridas: ["Carpintería", "Estructuras Metálicas"],
+        certificaciones_requeridas: ["Curso Prevención de Riesgos"]
+      }
+    ];
+
+    for (const obraData of obrasToSeed) {
+      const obra = obraRepository.create(obraData);
+      await obraRepository.save(obra);
+      console.log(`=> Configuración Inicial: Obra creada: ${obraData.nombre}`);
     }
   }
 }

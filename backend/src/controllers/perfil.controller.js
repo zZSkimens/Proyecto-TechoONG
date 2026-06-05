@@ -6,7 +6,7 @@ import { HistorialEstado } from "../entities/historialEstado.entity.js";
 
 export async function obtenerMiPerfil(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.sub;
     const perfil = await obtenerPerfilPorUsuario(userId);
 
     if (!perfil) {
@@ -21,7 +21,7 @@ export async function obtenerMiPerfil(req, res) {
 
 export async function actualizarMiPerfil(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id || req.user.sub;
     const { nombre_completo, telefono, rol, informacion_profesional, informacion_academica, competencias, certificaciones } = req.body;
     
     const datosFiltrados = { nombre_completo, telefono, rol, informacion_profesional, informacion_academica, competencias, certificaciones };
@@ -78,7 +78,7 @@ export async function validarPerfilPostulante(req, res) {
       perfil_id: perfilActualizado.id,
       estado_anterior: estadoAnterior,
       estado_nuevo: estado,
-      cambiado_por_id: req.user.id,
+      cambiado_por_id: req.user.id || req.user.sub,
       comentario: comentario || "Cambio de estado por el administrador",
     });
     await historialRepository.save(auditoria);
@@ -103,3 +103,19 @@ export async function validarPerfilPostulante(req, res) {
     handleErrorServer(res, 500, "Error al validar el perfil", error.message);
   }
 }
+
+export async function obtenerHistorialPerfil(req, res) {
+  try {
+    const { id } = req.params;
+    const historialRepository = AppDataSource.getRepository(HistorialEstado);
+    const historial = await historialRepository.find({
+      where: { perfil_id: parseInt(id) },
+      order: { creado_en: "DESC" },
+      relations: ["cambiadoPor"]
+    });
+    handleSuccess(res, 200, "Historial obtenido correctamente", historial);
+  } catch (error) {
+    handleErrorServer(res, 500, "Error al obtener el historial", error.message);
+  }
+}
+

@@ -56,6 +56,7 @@ export async function calcularMatchInteligente(obraId) {
     return {
       voluntario_id: voluntario.id,
       nombre_completo: voluntario.nombre_completo,
+      rut: voluntario.user ? voluntario.user.rut : null,
       email: voluntario.user ? voluntario.user.email : null,
       telefono: voluntario.telefono,
       zona_asignada: volZona,
