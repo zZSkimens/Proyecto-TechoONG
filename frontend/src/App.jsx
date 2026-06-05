@@ -10,6 +10,7 @@ import RecepcionPage from './pages/Recepcion.jsx';
 import TrazabilidadPage from './pages/Trazabilidad.jsx';
 import InventarioPage from './pages/Inventario.jsx';
 import CuadrillasPage from './pages/Cuadrillas.jsx';
+import ViajesPage from './pages/Viajes.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
@@ -17,6 +18,8 @@ const ROLE_ROUTES = {
   enc_alimentacion: ['/aprobacion', '/trazabilidad'],
   bodega: ['/despacho', '/inventario'],
   administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas'],
+  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes'],
+  voluntario: ['/viajes'],
 };
 
 function getDefaultRoute(role) {
@@ -88,6 +91,9 @@ export default function App() {
                   } />
                   <Route path="/cuadrillas" element={
                     <RoleRoute><CuadrillasPage /></RoleRoute>
+                  } />
+                  <Route path="/viajes" element={
+                    <RoleRoute><ViajesPage /></RoleRoute>
                   } />
                   <Route path="*" element={<DefaultRedirect />} />
                 </Routes>
