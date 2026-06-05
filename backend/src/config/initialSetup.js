@@ -1,6 +1,7 @@
 import { AppDataSource } from "./configDb.js";
 import { User } from "../entities/user.entity.js";
 import { Obra } from "../entities/obra.entity.js";
+import { Voluntario } from "../entities/voluntario.entity.js";
 import bcrypt from "bcrypt";
 
 export async function createInitialUsers() {
@@ -56,6 +57,40 @@ export async function createInitialUsers() {
       });
       await userRepository.save(user);
       console.log(`=> Configuración Inicial: Usuario creado: ${userData.name} (Rol: ${userData.role})`);
+    }
+  }
+
+  // Seed de Voluntarios de prueba
+  const voluntarioRepository = AppDataSource.getRepository(Voluntario);
+  const volunteersToSeed = [
+    {
+      rut: "20145789-3",
+      nombres: "Lucas",
+      apellidos: "Barrios",
+      correo: "lucas.barrios@correo.cl",
+      password: "VolunPass1",
+      disponible: true
+    },
+    {
+      rut: "19852364-7",
+      nombres: "Catalina",
+      apellidos: "Perez",
+      correo: "catalina.perez@correo.cl",
+      password: "VolunPass2",
+      disponible: true
+    }
+  ];
+
+  for (const volData of volunteersToSeed) {
+    const existingVol = await voluntarioRepository.findOneBy({ rut: volData.rut });
+    if (!existingVol) {
+      const hashedPassword = await bcrypt.hash(volData.password, 10);
+      const voluntario = voluntarioRepository.create({
+        ...volData,
+        password: hashedPassword
+      });
+      await voluntarioRepository.save(voluntario);
+      console.log(`=> Configuración Inicial: Voluntario creado: ${volData.nombres} ${volData.apellidos} (RUT: ${volData.rut})`);
     }
   }
 
