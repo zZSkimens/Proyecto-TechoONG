@@ -11,13 +11,16 @@ import TrazabilidadPage from './pages/Trazabilidad.jsx';
 import InventarioPage from './pages/Inventario.jsx';
 import CuadrillasPage from './pages/Cuadrillas.jsx';
 import ViajesPage from './pages/Viajes.jsx';
+import ItemsPage from './pages/Items.jsx';
+import DespachoHerramientasPage from './pages/DespachoHerramientas.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
   jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas'],
   enc_alimentacion: ['/aprobacion', '/trazabilidad'],
   bodega: ['/despacho', '/inventario'],
-  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas'],
+  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas'],
+  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas'],
   coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes'],
   voluntario: ['/viajes'],
 };
@@ -94,6 +97,12 @@ export default function App() {
                   } />
                   <Route path="/viajes" element={
                     <RoleRoute><ViajesPage /></RoleRoute>
+                  } />
+                  <Route path="/items" element={
+                    <RoleRoute><ItemsPage /></RoleRoute>
+                  } />
+                  <Route path="/despacho-herramientas" element={
+                    <RoleRoute><DespachoHerramientasPage /></RoleRoute>
                   } />
                   <Route path="*" element={<DefaultRedirect />} />
                 </Routes>
