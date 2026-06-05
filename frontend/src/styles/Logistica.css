@@ -1,0 +1,811 @@
+/* ==========================================================================
+   ESTILOS PREMIUM PARA EL MÓDULO DE LOGÍSTICA
+   ========================================================================== */
+
+.logistica-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn var(--transition-slow);
+}
+
+.logistica-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Indicador de Rol y Seguridad */
+.role-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
+}
+
+.role-badge.authorized {
+  background: var(--success-subtle);
+  border-color: rgba(34, 197, 94, 0.2);
+  color: var(--success);
+}
+
+.role-badge.read-only {
+  background: var(--warning-subtle);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+}
+
+.role-badge-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.role-badge-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-badge-text span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.role-badge-text small {
+  font-size: 11px;
+  opacity: 0.8;
+  color: var(--text-primary);
+}
+
+/* Navegación por Pestañas (Tabs) */
+.logistica-tabs-nav {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary);
+  padding: 12px 20px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  transition: all var(--transition-base);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.tab-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tab-btn.active {
+  color: var(--accent-hover);
+  border-bottom-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* Grilla Logística de Columnas */
+.logistica-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .logistica-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+.logistica-card {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+
+.section-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+/* Overlays para control de acceso */
+.lock-overlay-msg {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  color: var(--warning);
+  font-size: 13px;
+}
+
+.lock-overlay-msg svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Formularios logísticos */
+.logistica-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transition: opacity var(--transition-base);
+}
+
+.logistica-form.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.inline-checkbox-group {
+  margin: var(--space-xs) 0;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  border-color: var(--border-hover);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkmark::after {
+  display: block;
+}
+
+.checkbox-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checkbox-info strong {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.checkbox-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Caja de Selección de Voluntarios */
+.volunteers-assignment-box {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.capacity-label {
+  font-size: 11px;
+  color: var(--accent-hover);
+  background: var(--accent-subtle);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.volunteers-scroll-list {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-right: var(--space-xs);
+}
+
+.volunteer-item-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 8px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.volunteer-item-row:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-hover);
+}
+
+.volunteer-item-row.selected {
+  border-color: var(--accent-hover);
+  background: rgba(99, 102, 241, 0.04);
+}
+
+.volunteer-row-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.volunteer-row-text strong {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.volunteer-row-text small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Botones de formulario */
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-weight: 600;
+  padding: 12px;
+}
+
+.submit-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Listado de Cuadrillas */
+.cuadrillas-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.cuadrilla-card-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transition: all var(--transition-base);
+}
+
+.cuadrilla-card-item:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+.cuadrilla-card-item.selection-actionable {
+  cursor: pointer;
+}
+
+.cuadrilla-card-item.active-selection {
+  border-color: var(--warning);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+  background: rgba(245, 158, 11, 0.02);
+}
+
+.cuadrilla-card-item.dispatched {
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.cuadrilla-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cuadrilla-card-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.target-zone {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.emergency-alert-pill {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--error-subtle);
+  color: var(--error);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
+.selected-indicator-pill {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--warning-subtle);
+  color: var(--warning);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.dispatch-success-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--success);
+  letter-spacing: 0.5px;
+}
+
+.cuadrilla-card-body {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cuadrilla-card-body p strong {
+  color: var(--text-primary);
+}
+
+.volunteers-avatar-stack {
+  display: flex;
+  margin-top: var(--space-xs);
+  padding-left: 2px;
+}
+
+.avatar-mini {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  border: 2px solid var(--bg-surface);
+  margin-left: -6px;
+  transition: transform var(--transition-fast);
+}
+
+.avatar-mini:hover {
+  transform: translateY(-2px);
+  z-index: 10;
+}
+
+.cuadrilla-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-sm);
+  margin-top: auto;
+}
+
+.delete-btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+.delete-btn-icon:hover {
+  color: var(--error);
+  background: var(--error-subtle);
+}
+
+/* Despacho Preview */
+.selected-crew-preview-info {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.selected-crew-preview-info h4 {
+  font-size: 14px;
+  margin-bottom: var(--space-xs);
+}
+
+.selected-crew-preview-info p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.select-crew-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-md);
+  color: var(--text-muted);
+  text-align: center;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-md);
+}
+
+.select-crew-prompt svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-md);
+  opacity: 0.3;
+}
+
+/* PESTAÑA 3: SEGUIMIENTO Y SEGURIDAD */
+.logistica-seguimiento-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .logistica-seguimiento-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+.deployments-list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.deployment-item-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transition: all var(--transition-base);
+}
+
+.deployment-item-card:hover {
+  border-color: var(--border-hover);
+}
+
+.deployment-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-sm);
+}
+
+.deployment-item-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.destination-route {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.deployment-item-body {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.deployment-transport-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.deployment-transport-info strong {
+  color: var(--text-primary);
+}
+
+/* Stepper Visual */
+.deployment-stepper {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+  padding: 0 var(--space-xs);
+}
+
+.stepper-track-bar {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 1;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25%;
+}
+
+.step-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 3px solid var(--border);
+  transition: all var(--transition-base);
+}
+
+.step-label {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 6px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Estados Stepper */
+.step.completed .step-dot {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+.step.completed .step-label {
+  color: var(--success);
+}
+
+.step.active .step-dot {
+  border-color: var(--accent);
+  background: var(--bg-surface);
+  box-shadow: 0 0 10px var(--accent-glow);
+  transform: scale(1.1);
+}
+
+.step.active .step-label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.step.pending .step-dot {
+  border-color: var(--border);
+}
+
+.deployment-item-footer {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+/* Bitácora de Seguridad - Timeline */
+.safety-logs-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.border-none {
+  border: none !important;
+}
+
+.bitacora-timeline-box {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: var(--space-xs);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+  margin-left: 10px;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.bitacora-timeline-item {
+  position: relative;
+  animation: slideIn var(--transition-base);
+}
+
+.timeline-dot-wrapper {
+  position: absolute;
+  left: -29px;
+  top: 10px;
+  background: var(--bg-base);
+  padding: 4px;
+  border-radius: var(--radius-full);
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  display: block;
+  border: 2px solid var(--border);
+  background: var(--border);
+  transition: all var(--transition-base);
+}
+
+.timeline-content-card {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  transition: all var(--transition-fast);
+}
+
+.timeline-content-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-hover);
+}
+
+.log-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.log-msg {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Timeline Types styling */
+.bitacora-timeline-item.type-info .timeline-dot {
+  border-color: var(--info);
+  background: var(--info);
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+}
+
+.bitacora-timeline-item.type-success .timeline-dot {
+  border-color: var(--success);
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.bitacora-timeline-item.type-warning .timeline-dot {
+  border-color: var(--warning);
+  background: var(--warning);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+}
+
+.bitacora-timeline-item.type-danger .timeline-dot {
+  border-color: var(--error);
+  background: var(--error);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+/* Flex layout utilities */
+.flex-row {
+  display: flex;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-2 {
+  flex: 2;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+.gap-md {
+  gap: var(--space-md);
+}
+.gap-lg {
+  gap: var(--space-lg);
+}
+
+/* Scrollbar customization for volunteers list & bitacora */
+.volunteers-scroll-list::-webkit-scrollbar,
+.bitacora-timeline-box::-webkit-scrollbar {
+  width: 5px;
+}
+
+.volunteers-scroll-list::-webkit-scrollbar-track,
+.bitacora-timeline-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.volunteers-scroll-list::-webkit-scrollbar-thumb,
+.bitacora-timeline-box::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+}
+
+.volunteers-scroll-list::-webkit-scrollbar-thumb:hover,
+.bitacora-timeline-box::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
