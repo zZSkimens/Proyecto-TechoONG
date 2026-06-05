@@ -71,23 +71,23 @@ export default function ViajesPage() {
   async function loadData() {
     setLoading(true);
     try {
-      // Load Cuadrillas
+      // Cuadrillas
       const cuadrillasData = await getCuadrillas();
       setCuadrillas(Array.isArray(cuadrillasData) ? cuadrillasData : []);
 
-      // Load Volunteers
+      // Voluntarios
       const volRes = await get('/voluntarios');
       setVolunteers(Array.isArray(volRes?.data) ? volRes.data : []);
 
-      // Load Drivers
+      // Choferes
       const driversData = await get('/choferes');
       setDrivers(Array.isArray(driversData) ? driversData : []);
 
-      // Load Sectores
+      // Sectores
       const sectorsData = await get('/sectores');
       setSectors(Array.isArray(sectorsData) ? sectorsData : []);
 
-      // Load Deployments
+      // Despliegues
       const deploymentsData = await get('/despliegues');
       setDeployments(Array.isArray(deploymentsData) ? deploymentsData : []);
 
@@ -98,7 +98,7 @@ export default function ViajesPage() {
     }
   }
 
-  // Refresh data after key operations
+  // Actualizar datos después de operaciones clave 
   async function refreshData() {
     try {
       const cuadrillasData = await getCuadrillas();
@@ -123,7 +123,7 @@ export default function ViajesPage() {
     }
   }
 
-  // TAB 1: Crew Operations (Viajes-isolated copy of CRUD)
+  // Operaciones de la tripulación
   async function handleCrewSubmit(e) {
     e.preventDefault();
     setSubmittingCrew(true);
@@ -213,7 +213,7 @@ export default function ViajesPage() {
     }));
   }
 
-  // TAB 2: Driver Operations
+  // Operaciones del conductor
   async function handleDriverSubmit(e) {
     e.preventDefault();
     setSubmittingDriver(true);
@@ -236,7 +236,7 @@ export default function ViajesPage() {
     }
   }
 
-  // TAB: Sector Operations
+  // Operaciones del sector
   async function handleSectorSubmit(e) {
     e.preventDefault();
     setSubmittingSector(true);
@@ -279,7 +279,7 @@ export default function ViajesPage() {
     }
   }
 
-  // TAB 3: Dispatch Actions
+  // Operaciones de despacho
   async function handleCreateDispatch(e) {
     e.preventDefault();
     if (!dispatchForm.cuadrillaId || !dispatchForm.choferId || (!dispatchForm.sectorId && !dispatchForm.sectorText)) {
@@ -345,18 +345,18 @@ export default function ViajesPage() {
     }
   }
 
-  // Calculations
+  // Cálculos
   const activeDeployments = deployments.filter(d => d.estado === 'en_camino');
   const emergencyCrewsCount = cuadrillas.filter(c => c.modo_emergencia).length;
   
   const assignedVolunteersRuts = new Set(cuadrillas.flatMap(c => c.voluntarios || []));
   const availableVolunteers = volunteers.filter(v => v.disponible && !assignedVolunteersRuts.has(v.rut));
 
-  // Dynamic movement logs for Tracking Tab
+  // Registros de movimiento dinámicos para la pestaña de seguimiento
   const generateMovementLogs = () => {
     const logs = [];
 
-    // Deployment logs
+    // Registros de implementación
     deployments.forEach(d => {
       const crewName = d.cuadrilla?.name || `Cuadrilla #${d.cuadrilla_id}`;
       const driverName = d.chofer ? `${d.chofer.nombres} ${d.chofer.apellidos}` : 'Chofer No Registrado';
@@ -384,7 +384,7 @@ export default function ViajesPage() {
       }
     });
 
-    // Crew logs
+    // Registros de tripulación
     cuadrillas.forEach(c => {
       if (c.created_at) {
         logs.push({
