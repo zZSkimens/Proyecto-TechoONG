@@ -35,6 +35,12 @@ export async function createInitialUsers() {
       name: "Catalina Perez",
       password: "VolunPass2",
       role: "voluntario"
+    },
+    {
+      rut: "22222222-2",
+      name: "Coordinador de Viajes",
+      password: "viajes",
+      role: "coordinador_viajes"
     }
   ];
 
