@@ -10,7 +10,7 @@ export async function createDespliegueService(despliegueData) {
 export async function getDesplieguesService() {
   const despliegueRepository = AppDataSource.getRepository(Despliegue);
   return await despliegueRepository.find({
-    relations: ["cuadrilla", "chofer", "cuadrilla.sector", "cuadrilla.voluntarios"],
+    relations: ["cuadrilla", "chofer"],
   });
 }
 
@@ -18,7 +18,7 @@ export async function getDespliegueByIdService(id) {
   const despliegueRepository = AppDataSource.getRepository(Despliegue);
   return await despliegueRepository.findOne({
     where: { id },
-    relations: ["cuadrilla", "chofer", "cuadrilla.sector", "cuadrilla.voluntarios"],
+    relations: ["cuadrilla", "chofer"],
   });
 }
 
