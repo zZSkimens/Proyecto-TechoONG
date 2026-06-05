@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Despliegue } from "../entities/despliegue.entity.js";
 
 export async function createDespliegueService(despliegueData) {

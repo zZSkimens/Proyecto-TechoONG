@@ -1,6 +1,6 @@
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import { obtenerPerfilPorUsuario, crearOActualizarPerfil, obtenerTodosLosPerfiles as serviceObtenerTodos, cambiarEstadoPerfil } from "../services/perfil.service.js";
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Perfil } from "../entities/perfil.entity.js";
 import { HistorialEstado } from "../entities/historialEstado.entity.js";
 

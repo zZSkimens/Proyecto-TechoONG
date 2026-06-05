@@ -6,11 +6,11 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleLogin = useCallback(async (email, password) => {
+  const handleLogin = useCallback(async (rut, password) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await loginService(email, password);
+      const data = await loginService(rut, password);
       setUser(data.user);
       return data;
     } catch (err) {

@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { ActaDevolucion } from "../entities/actaDevolucion.entity.js";
 import { ActaDevolucionItem } from "../entities/actaDevolucionItem.entity.js";
 

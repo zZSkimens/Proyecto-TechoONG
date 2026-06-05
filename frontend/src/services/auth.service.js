@@ -1,7 +1,7 @@
 import { post } from './api.js';
 
-export async function login(email, password) {
-  const response = await post('/auth/login', { email, password });
+export async function login(rut, password) {
+  const response = await post('/auth/login', { rut, password });
   const { token, user } = response.data;
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(user));

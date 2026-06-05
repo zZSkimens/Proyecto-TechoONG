@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { RecepcionEntrega, RecepcionEntregaItem } from "../entities/recepcion_entrega.entity.js";
 import { OrdenDespacho, OrdenDespachoItem } from "../entities/orden_despacho.entity.js";
 import { SolicitudAlimento } from "../entities/solicitud_alimento.entity.js";

@@ -9,13 +9,14 @@ import DespachoPage from './pages/Despacho.jsx';
 import RecepcionPage from './pages/Recepcion.jsx';
 import TrazabilidadPage from './pages/Trazabilidad.jsx';
 import InventarioPage from './pages/Inventario.jsx';
+import CuadrillasPage from './pages/Cuadrillas.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
-  jefe_cuadrilla: ['/solicitudes', '/recepcion'],
+  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas'],
   enc_alimentacion: ['/aprobacion', '/trazabilidad'],
   bodega: ['/despacho', '/inventario'],
-  admin: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad'],
+  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas'],
 };
 
 function getDefaultRoute(role) {
@@ -84,6 +85,9 @@ export default function App() {
                   } />
                   <Route path="/inventario" element={
                     <RoleRoute><InventarioPage /></RoleRoute>
+                  } />
+                  <Route path="/cuadrillas" element={
+                    <RoleRoute><CuadrillasPage /></RoleRoute>
                   } />
                   <Route path="*" element={<DefaultRedirect />} />
                 </Routes>

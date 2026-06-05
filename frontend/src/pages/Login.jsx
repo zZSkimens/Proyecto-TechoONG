@@ -11,7 +11,7 @@ const ROLE_DEFAULT_ROUTES = {
 };
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [rut, setRut] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,14 +21,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('Email y contraseña son requeridos');
+    if (!rut || !password) {
+      setError('RUT y contraseña son requeridos');
       return;
     }
 
     setLoading(true);
     try {
-      await login(email, password);
+      await login(rut, password);
       const user = getUser();
       const defaultRoute = ROLE_DEFAULT_ROUTES[user?.role] || '/solicitudes';
       navigate(defaultRoute);
@@ -51,15 +51,15 @@ export default function LoginPage() {
           {error && <div className="login-error">{error}</div>}
 
           <div className="form-group">
-            <label className="form-label" htmlFor="login-email">Email</label>
+            <label className="form-label" htmlFor="login-rut">RUT</label>
             <input
-              id="login-email"
+              id="login-rut"
               className="input"
-              type="email"
-              placeholder="correo@ejemplo.cl"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
+              type="text"
+              placeholder="12345678-9"
+              value={rut}
+              onChange={(e) => setRut(e.target.value)}
+              autoComplete="username"
             />
           </div>
 

@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Chofer } from "../entities/chofer.entity.js";
 
 export async function createChoferService(choferData) {

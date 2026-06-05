@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Obra } from "../entities/obra.entity.js";
 import { Perfil } from "../entities/perfil.entity.js";
 

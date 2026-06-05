@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Item } from "../entities/item.entity.js";
 
 export async function createItem(data) {

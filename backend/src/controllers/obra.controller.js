@@ -1,5 +1,5 @@
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Obra } from "../entities/obra.entity.js";
 import { calcularMatchInteligente } from "../services/match.service.js";
 

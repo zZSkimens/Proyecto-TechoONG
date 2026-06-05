@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Perfil } from "../entities/perfil.entity.js";
 
 const perfilRepository = AppDataSource.getRepository(Perfil);

@@ -4,10 +4,10 @@ import { useState } from 'react';
 import '../styles/Sidebar.css';
 
 const ROLE_LINKS = {
-  jefe_cuadrilla: ['/solicitudes', '/recepcion'],
+  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas'],
   enc_alimentacion: ['/aprobacion', '/trazabilidad'],
   bodega: ['/despacho', '/inventario'],
-  admin: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad'],
+  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas'],
 };
 
 const SECTIONS = [
@@ -96,6 +96,23 @@ const SECTIONS = [
       },
     ],
   },
+  {
+    label: 'Administración',
+    links: [
+      {
+        to: '/cuadrillas',
+        label: 'Cuadrillas',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        ),
+      },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -108,7 +125,7 @@ export default function Sidebar() {
     navigate('/login');
   };
 
-  const initial = user?.email ? user.email[0].toUpperCase() : 'U';
+  const initial = user?.name ? user.name[0].toUpperCase() : 'U';
   const userRole = user?.role || 'jefe_cuadrilla';
   const allowedLinks = ROLE_LINKS[userRole] || [];
 
@@ -165,7 +182,7 @@ export default function Sidebar() {
         <div className="sidebar-user">
           <div className="sidebar-user-info">
             <div className="sidebar-avatar">{initial}</div>
-            <span className="sidebar-user-email">{user?.email || 'Usuario'}</span>
+            <span className="sidebar-user-email">{user?.name || 'Usuario'}</span>
           </div>
           <button className="sidebar-logout" onClick={handleLogout} title="Cerrar sesión">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

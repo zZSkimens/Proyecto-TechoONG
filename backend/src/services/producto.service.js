@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Producto } from "../entities/producto.entity.js";
 import { MovimientoInventario } from "../entities/movimiento_inventario.entity.js";
 

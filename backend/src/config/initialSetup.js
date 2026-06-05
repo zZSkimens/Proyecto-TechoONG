@@ -1,4 +1,4 @@
-import { AppDataSource } from "./configDB.js";
+import { AppDataSource } from "./configDb.js";
 import { User } from "../entities/user.entity.js";
 import bcrypt from "bcrypt";
 
@@ -6,6 +6,12 @@ export async function createInitialUsers() {
   const userRepository = AppDataSource.getRepository(User);
   //Creamos usuarios para pruebas
   const usersToSeed = [
+    {
+      rut: "11111111-1",
+      name: "Administrador Global",
+      password: "admin",
+      role: "administrador"
+    },
     {
       rut: "14986372-9",
       name: "Augusto Pinares",

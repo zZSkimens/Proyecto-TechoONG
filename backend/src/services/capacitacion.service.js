@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/configDB.js";
+import { AppDataSource } from "../config/configDb.js";
 import { Capacitacion } from "../entities/capacitacion.entity.js";
 import { PerfilCapacitacion } from "../entities/perfilCapacitacion.entity.js";
 import { Perfil } from "../entities/perfil.entity.js";
