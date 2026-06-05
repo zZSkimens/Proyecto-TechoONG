@@ -6,15 +6,15 @@ const userRepository = AppDataSource.getRepository(User);
 
 export async function coordinadorMiddleware(req, res, next) {
   try {
-    const userId = req.user.id;
-    
+    const userId = req.user.id || req.user.sub;
+
     const usuario = await userRepository.findOneBy({ id: userId });
-    
+
     if (!usuario) {
       return handleErrorClient(res, 404, "Usuario no encontrado.");
     }
 
-    if (usuario.rol !== "coordinador" && usuario.rol !== "admin") {
+    if (usuario.role !== "coordinador" && usuario.role !== "admin" && usuario.role !== "administrador") {
       return handleErrorClient(res, 403, "Acceso denegado. Se requieren permisos de coordinador o administrador.");
     }
 
