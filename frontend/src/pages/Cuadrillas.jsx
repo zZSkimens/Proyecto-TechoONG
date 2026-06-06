@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getCuadrillas, crearCuadrilla, eliminarCuadrilla } from '../services/cuadrillas.service.js';
+import { getDespachosByCuadrilla } from '../services/despachoHerramientas.service.js';
 import Modal from '../components/Modal.jsx';
 import { showToast } from '../helpers/toast.js';
 
@@ -8,6 +9,8 @@ export default function CuadrillasPage() {
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [despachosMap, setDespachosMap] = useState({});
   const [formData, setFormData] = useState({
     name: '',
     encargado: '',
@@ -26,6 +29,18 @@ export default function CuadrillasPage() {
     try {
       const data = await getCuadrillas();
       setCuadrillas(Array.isArray(data) ? data : []);
+
+      // Cargar despachos para cada cuadrilla
+      const despachos = {};
+      for (const cuadrilla of Array.isArray(data) ? data : []) {
+        try {
+          const despData = await getDespachosByCuadrilla(cuadrilla.id);
+          despachos[cuadrilla.id] = Array.isArray(despData) ? despData : [];
+        } catch {
+          despachos[cuadrilla.id] = [];
+        }
+      }
+      setDespachosMap(despachos);
     } catch (err) {
       showToast(err.message || 'Error al cargar cuadrillas', 'error');
     } finally {
@@ -132,27 +147,104 @@ export default function CuadrillasPage() {
             </thead>
             <tbody>
               {cuadrillas.map((c) => (
-                <tr key={c.id}>
-                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{c.id}</td>
-                  <td>{c.name}</td>
-                  <td>{c.encargado}</td>
-                  <td>{c.zona_afectada}</td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(c.fecha)}</td>
-                  <td>{c.max_voluntarios}</td>
-                  <td>
-                    {c.modo_emergencia ? (
-                      <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
-                    ) : (
-                      <span style={{ color: 'var(--text-muted)' }}>No</span>
-                    )}
-                  </td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(c.created_at)}</td>
-                  <td>
-                    <button className="btn btn-ghost btn-sm" onClick={() => handleDelete(c.id)} style={{ color: 'var(--error)' }}>
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
+                <React.Fragment key={c.id}>
+                  <tr>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{c.id}</td>
+                    <td>{c.name}</td>
+                    <td>{c.encargado}</td>
+                    <td>{c.zona_afectada}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(c.fecha)}</td>
+                    <td>{c.max_voluntarios}</td>
+                    <td>
+                      {c.modo_emergencia ? (
+                        <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)' }}>No</span>
+                      )}
+                    </td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(c.created_at)}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {despachosMap[c.id] && despachosMap[c.id].length > 0 && (
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => setExpandedId(expandedId === c.id ? null : c.id)}
+                            title={expandedId === c.id ? "Contraer" : "Ver despachos"}
+                            style={{ color: 'var(--info)' }}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ transform: expandedId === c.id ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                            {expandedId === c.id ? 'Ocultar' : 'Despachos'}
+                          </button>
+                        )}
+                        <button className="btn btn-ghost btn-sm" onClick={() => handleDelete(c.id)} style={{ color: 'var(--error)' }}>
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedId === c.id && despachosMap[c.id] && despachosMap[c.id].length > 0 && (
+                    <tr style={{ backgroundColor: 'rgba(99, 102, 241, 0.05)' }} key={`expanded-${c.id}`}>
+                      <td colSpan="9">
+                        <div style={{ padding: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Despachos Asignados</h4>
+                          <div className="table-container">
+                            <table className="table" style={{ margin: 0 }}>
+                              <thead>
+                                <tr>
+                                  <th>Despacho ID</th>
+                                  <th>Producto</th>
+                                  <th>Categoría</th>
+                                  <th>Cantidad</th>
+                                  <th>Estado</th>
+                                  <th>Fecha</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {despachosMap[c.id].map((despacho) =>
+                                  despacho.items && despacho.items.length > 0 ? (
+                                    despacho.items.map((item, idx) => (
+                                      <tr key={`${despacho.id}-${idx}`}>
+                                        {idx === 0 && (
+                                          <>
+                                            <td rowSpan={despacho.items.length} style={{ fontWeight: 600 }}>#{despacho.id}</td>
+                                          </>
+                                        )}
+                                        <td>{item.name}</td>
+                                        <td>{item.category}</td>
+                                        <td>{item.cantidad}</td>
+                                        {idx === 0 && (
+                                          <>
+                                            <td rowSpan={despacho.items.length}>
+                                              <span style={{
+                                                padding: '4px 10px',
+                                                borderRadius: '6px',
+                                                fontSize: '12px',
+                                                fontWeight: 600,
+                                                background: despacho.estado === 'Pendiente' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                                                color: despacho.estado === 'Pendiente' ? 'var(--warning)' : 'var(--success)',
+                                              }}>
+                                                {despacho.estado}
+                                              </span>
+                                            </td>
+                                            <td rowSpan={despacho.items.length} style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                                              {formatDate(despacho.created_at)}
+                                            </td>
+                                          </>
+                                        )}
+                                      </tr>
+                                    ))
+                                  ) : null
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

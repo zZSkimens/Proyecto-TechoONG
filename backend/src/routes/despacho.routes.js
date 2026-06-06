@@ -13,7 +13,7 @@ const router = Router();
 router.use(authMiddleware);
 router.post("/", isAdminBodega, createDespachoController);
 router.get("/", isAdminBodega, getDespachosController);
-router.get("/cuadrilla/:cuadrillaId", isAdminBodega, getDespachosByCuadrillaController);
+router.get("/cuadrilla/:cuadrillaId", getDespachosByCuadrillaController);
 router.post("/:id/devolucion", isAdminBodega, devolverItemsController);
 
 export default router;

@@ -68,9 +68,28 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
 
 export async function getDespachos() {
   const despachoRepository = AppDataSource.getRepository(Despacho);
-  return await despachoRepository.find({
+  const despachoItemRepository = AppDataSource.getRepository(DespachoItem);
+  const itemRepository = AppDataSource.getRepository(Item);
+
+  const despachos = await despachoRepository.find({
     relations: ["cuadrilla"],
   });
+
+  for (const d of despachos) {
+    const despachoItems = await despachoItemRepository.find({
+      where: { despacho: { id: d.id } },
+      relations: ["item"]
+    });
+    d.items = despachoItems.map(di => ({
+      id: di.item.id,
+      name: di.item.name,
+      category: di.item.category,
+      cantidad: di.cantidad,
+      stock: di.item.stock
+    }));
+  }
+
+  return despachos;
 }
 
 export async function getDespachosByCuadrilla(cuadrillaId) {

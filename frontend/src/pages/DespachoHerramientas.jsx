@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getDespachosCuadrilla, crearDespachoHerramientas } from '../services/despachoHerramientas.service.js';
 import { getCuadrillas } from '../services/cuadrillas.service.js';
 import { getItems } from '../services/items.service.js';
@@ -12,6 +12,7 @@ export default function DespachoHerramientasPage() {
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
   const [showDetail, setShowDetail] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     cuadrillaId: '',
@@ -158,27 +159,74 @@ export default function DespachoHerramientasPage() {
                 <th>Cuadrilla</th>
                 <th>Estado</th>
                 <th>Fecha</th>
+                <th>Información</th>
               </tr>
             </thead>
             <tbody>
               {despachos.map((d) => (
-                <tr key={d.id} className="clickable" onClick={() => setShowDetail(d)}>
-                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{d.id}</td>
-                  <td>{d.cuadrilla?.name || `Cuadrilla #${d.cuadrilla?.id || '-'}`}</td>
-                  <td>
-                    <span style={{
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      background: d.estado === 'Pendiente' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                      color: d.estado === 'Pendiente' ? 'var(--warning)' : 'var(--success)',
-                    }}>
-                      {d.estado}
-                    </span>
-                  </td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(d.created_at)}</td>
-                </tr>
+                <React.Fragment key={d.id}>
+                  <tr>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{d.id}</td>
+                    <td>{d.cuadrilla?.name || `Cuadrilla #${d.cuadrilla?.id || '-'}`}</td>
+                    <td>
+                      <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        background: d.estado === 'Pendiente' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                        color: d.estado === 'Pendiente' ? 'var(--warning)' : 'var(--success)',
+                      }}>
+                        {d.estado}
+                      </span>
+                    </td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(d.created_at)}</td>
+                    <td>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
+                        title={expandedId === d.id ? "Contraer" : "Expandir"}
+                        style={{ color: 'var(--info)' }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ transform: expandedId === d.id ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        {expandedId === d.id ? 'Contraer' : 'Información'}
+                      </button>
+                    </td>
+                  </tr>
+                  {expandedId === d.id && d.items && d.items.length > 0 && (
+                    <tr style={{ backgroundColor: 'rgba(99, 102, 241, 0.05)' }}>
+                      <td colSpan="5">
+                        <div style={{ padding: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Items Despachados</h4>
+                          <div className="table-container">
+                            <table className="table" style={{ margin: 0 }}>
+                              <thead>
+                                <tr>
+                                  <th>Producto</th>
+                                  <th>Categoría</th>
+                                  <th>Cantidad Despachada</th>
+                                  <th>Stock Actual</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {d.items.map((item, idx) => (
+                                  <tr key={idx}>
+                                    <td style={{ color: 'var(--text-primary)' }}>{item.name}</td>
+                                    <td>{item.category}</td>
+                                    <td>{item.cantidad}</td>
+                                    <td style={{ fontWeight: 600 }}>{item.stock}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -280,7 +328,7 @@ export default function DespachoHerramientasPage() {
         onClose={() => setShowDetail(null)}
         title={showDetail ? `Despacho #${showDetail.id}` : ''}
       >
-        {showDetail && (
+            {showDetail && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             <div className="detail-grid">
               <div className="detail-item">
@@ -310,7 +358,8 @@ export default function DespachoHerramientasPage() {
                       <tr>
                         <th>Producto</th>
                         <th>Categoría</th>
-                        <th>Cantidad</th>
+                        <th>Cantidad Despachada</th>
+                        <th>Stock Actual</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -319,6 +368,7 @@ export default function DespachoHerramientasPage() {
                           <td style={{ color: 'var(--text-primary)' }}>{item.name}</td>
                           <td>{item.category}</td>
                           <td>{item.cantidad}</td>
+                          <td style={{ fontWeight: 600 }}>{item.stock}</td>
                         </tr>
                       ))}
                     </tbody>
