@@ -37,6 +37,10 @@ export const Cuadrilla = new EntitySchema({
       type: "int",
       default: 6,
     },
+    fecha: {
+      type: "date",
+      nullable: true,
+    },
     created_at: {
       type: "timestamp",
       createDate: true,

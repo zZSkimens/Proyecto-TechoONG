@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getItems, crearItem } from '../services/items.service.js';
+import { getItems, crearItem, actualizarItem, eliminarItem } from '../services/items.service.js';
 import Modal from '../components/Modal.jsx';
 import { showToast } from '../helpers/toast.js';
 
@@ -7,8 +7,10 @@ export default function ItemsPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -51,6 +53,52 @@ export default function ItemsPage() {
       showToast(err.data?.message || err.message || 'Error al añadir producto', 'error');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleEdit(item) {
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      category: item.category,
+      stock: item.stock,
+      stockAdicional: 0,
+    });
+    setShowEdit(true);
+  }
+
+  async function handleEditSubmit(e) {
+    e.preventDefault();
+    if (!editingItem) {
+      showToast('Error al actualizar', 'error');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const nuevoStock = parseInt(formData.stock) + (parseInt(formData.stockAdicional) || 0);
+      await actualizarItem(editingItem.id, {
+        stock: nuevoStock,
+      });
+      showToast('Producto actualizado exitosamente');
+      setShowEdit(false);
+      setEditingItem(null);
+      setFormData({ name: '', category: '', stock: 0, stockAdicional: 0 });
+      loadData();
+    } catch (err) {
+      showToast(err.data?.message || err.message || 'Error al actualizar producto', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm('¿Está seguro de que desea eliminar este producto?')) return;
+    try {
+      await eliminarItem(id);
+      showToast('Producto eliminado exitosamente');
+      loadData();
+    } catch (err) {
+      showToast(err.data?.message || err.message || 'Error al eliminar producto', 'error');
     }
   }
 
@@ -133,6 +181,7 @@ export default function ItemsPage() {
                 <th>Categoría</th>
                 <th>Stock</th>
                 <th>Creado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -154,6 +203,14 @@ export default function ItemsPage() {
                   </td>
                   <td style={{ fontWeight: 600 }}>{item.stock}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(item.created_at)}</td>
+                  <td style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(item)} style={{ color: 'var(--info)' }}>
+                      Editar
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => handleDelete(item.id)} style={{ color: 'var(--error)' }}>
+                      Eliminar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -211,6 +268,91 @@ export default function ItemsPage() {
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
               />
             </div>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Item Modal */}
+      <Modal
+        isOpen={showEdit}
+        onClose={() => {
+          setShowEdit(false);
+          setEditingItem(null);
+          setFormData({ name: '', category: '', stock: 0, stockAdicional: 0 });
+        }}
+        title="Editar Producto"
+        footer={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => {
+              setShowEdit(false);
+              setEditingItem(null);
+              setFormData({ name: '', category: '', stock: 0, stockAdicional: 0 });
+            }}>Cancelar</button>
+            <button type="submit" form="edit-item-form" className="btn btn-primary" disabled={submitting}>
+              {submitting ? 'Actualizando...' : 'Actualizar Producto'}
+            </button>
+          </>
+        }
+      >
+        <form id="edit-item-form" onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <div className="form-group">
+            <label className="form-label">Nombre del Producto</label>
+            <input
+              className="input"
+              type="text"
+              value={formData.name}
+              disabled
+              style={{ backgroundColor: 'var(--bg-secondary)', cursor: 'not-allowed' }}
+            />
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Categoría</label>
+              <select
+                className="select"
+                value={formData.category}
+                disabled
+                style={{ backgroundColor: 'var(--bg-secondary)', cursor: 'not-allowed' }}
+              >
+                <option value="">Seleccionar categoría</option>
+                <option value="Herramienta">Herramienta</option>
+                <option value="Material">Material</option>
+              </select>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Stock Actual</label>
+              <input
+                className="input"
+                type="number"
+                value={formData.stock}
+                disabled
+                style={{ backgroundColor: 'var(--bg-secondary)', cursor: 'not-allowed' }}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Ingresar más Stock</label>
+              <input
+                className="input"
+                type="number"
+                min="0"
+                value={formData.stockAdicional}
+                onChange={(e) => setFormData({ ...formData, stockAdicional: e.target.value })}
+                placeholder="Cantidad a agregar"
+              />
+            </div>
+          </div>
+          <div style={{
+            padding: 'var(--space-sm)',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            borderRadius: '6px',
+            textAlign: 'center'
+          }}>
+            <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-muted)' }}>Stock Total Resultante</p>
+            <p style={{ margin: '8px 0 0 0', fontSize: '24px', fontWeight: 600, color: 'var(--info)' }}>
+              {parseInt(formData.stock) + (parseInt(formData.stockAdicional) || 0)}
+            </p>
           </div>
         </form>
       </Modal>

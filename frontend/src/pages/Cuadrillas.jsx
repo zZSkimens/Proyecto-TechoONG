@@ -14,6 +14,7 @@ export default function CuadrillasPage() {
     zona_afectada: '',
     modo_emergencia: false,
     max_voluntarios: 6,
+    fecha: '',
   });
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function CuadrillasPage() {
         zona_afectada: '',
         modo_emergencia: false,
         max_voluntarios: 6,
+        fecha: '',
       });
       loadData();
     } catch (err) {
@@ -121,6 +123,7 @@ export default function CuadrillasPage() {
                 <th>Nombre</th>
                 <th>Encargado</th>
                 <th>Zona Afectada</th>
+                <th>Fecha</th>
                 <th>Voluntarios Max.</th>
                 <th>Emergencia</th>
                 <th>Creada</th>
@@ -134,6 +137,7 @@ export default function CuadrillasPage() {
                   <td>{c.name}</td>
                   <td>{c.encargado}</td>
                   <td>{c.zona_afectada}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(c.fecha)}</td>
                   <td>{c.max_voluntarios}</td>
                   <td>
                     {c.modo_emergencia ? (
@@ -201,6 +205,15 @@ export default function CuadrillasPage() {
               value={formData.zona_afectada}
               onChange={(e) => setFormData({ ...formData, zona_afectada: e.target.value })}
               required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Fecha de Asignación</label>
+            <input
+              className="input"
+              type="date"
+              value={formData.fecha}
+              onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
             />
           </div>
           <div className="form-row">

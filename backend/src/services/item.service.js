@@ -16,3 +16,17 @@ export async function getItemById(id) {
   const itemRepository = AppDataSource.getRepository(Item);
   return await itemRepository.findOneBy({ id });
 }
+
+export async function updateItem(id, data) {
+  const itemRepository = AppDataSource.getRepository(Item);
+  await itemRepository.update(id, data);
+  return await itemRepository.findOneBy({ id });
+}
+
+export async function deleteItem(id) {
+  const itemRepository = AppDataSource.getRepository(Item);
+  const item = await itemRepository.findOneBy({ id });
+  if (!item) return null;
+  await itemRepository.delete(id);
+  return item;
+}
