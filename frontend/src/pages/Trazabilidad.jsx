@@ -87,7 +87,7 @@ export default function TrazabilidadPage() {
               <div className={`timeline-dot ${data.solicitud ? 'completed' : ''}`} />
               <div className="timeline-content">
                 <div className="timeline-title">
-                   Solicitud Creada
+                  Solicitud Creada
                   <StatusBadge estado={data.solicitud?.estado} />
                 </div>
                 <div className="timeline-date">{formatDate(data.solicitud?.created_at)}</div>
@@ -120,7 +120,7 @@ export default function TrazabilidadPage() {
             <div className="timeline-step">
               <div className={`timeline-dot ${data.solicitud?.fecha_aprobacion ? 'completed' : ''}`} />
               <div className={`timeline-content${!data.solicitud?.fecha_aprobacion ? ' inactive' : ''}`}>
-                <div className="timeline-title">✅ Aprobación</div>
+                <div className="timeline-title">Aprobación</div>
                 {data.solicitud?.fecha_aprobacion ? (
                   <>
                     <div className="timeline-date">{formatDate(data.solicitud.fecha_aprobacion)}</div>
