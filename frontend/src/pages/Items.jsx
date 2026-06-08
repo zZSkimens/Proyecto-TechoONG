@@ -180,7 +180,6 @@ export default function ItemsPage() {
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Stock</th>
-                <th>Creado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -202,7 +201,6 @@ export default function ItemsPage() {
                     </span>
                   </td>
                   <td style={{ fontWeight: 600 }}>{item.stock}</td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(item.created_at)}</td>
                   <td style={{ display: 'flex', gap: '8px' }}>
                     <button className="btn btn-ghost btn-sm" onClick={() => handleEdit(item)} style={{ color: 'var(--info)' }}>
                       Editar

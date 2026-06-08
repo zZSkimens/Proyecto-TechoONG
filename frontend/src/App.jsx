@@ -13,15 +13,16 @@ import CuadrillasPage from './pages/Cuadrillas.jsx';
 import ViajesPage from './pages/Viajes.jsx';
 import ItemsPage from './pages/Items.jsx';
 import DespachoHerramientasPage from './pages/DespachoHerramientas.jsx';
+import ActaDevolucionPage from './pages/ActaDevolucion.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
   jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas'],
   enc_alimentacion: ['/aprobacion', '/trazabilidad'],
   bodega: ['/despacho', '/inventario'],
-  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas'],
-  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas'],
-  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes'],
+  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion'],
+  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion'],
+  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion'],
   voluntario: ['/viajes'],
 };
 
@@ -103,6 +104,9 @@ export default function App() {
                   } />
                   <Route path="/despacho-herramientas" element={
                     <RoleRoute><DespachoHerramientasPage /></RoleRoute>
+                  } />
+                  <Route path="/actas-devolucion" element={
+                    <RoleRoute><ActaDevolucionPage /></RoleRoute>
                   } />
                   <Route path="*" element={<DefaultRedirect />} />
                 </Routes>

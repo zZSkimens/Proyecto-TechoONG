@@ -24,3 +24,8 @@ export async function eliminarCuadrilla(id) {
   const response = await del(`/cuadrillas/${id}`);
   return response.data;
 }
+
+export async function disolverCuadrilla(id) {
+  const response = await post(`/cuadrillas/${id}/disolver`);
+  return response.data;
+}

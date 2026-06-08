@@ -1,4 +1,4 @@
-import { createCuadrilla, getCuadrillas, updateCuadrilla, getCuadrillaById, deleteCuadrilla } from "../services/cuadrilla.service.js";
+import { createCuadrilla, getCuadrillas, updateCuadrilla, getCuadrillaById, deleteCuadrilla, dissolverCuadrilla } from "../services/cuadrilla.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export async function createCuadrillaController(req, res) {
@@ -112,5 +112,21 @@ export async function deleteCuadrillaController(req, res) {
     handleSuccess(res, 200, "Cuadrilla eliminada exitosamente. Las herramientas han sido devueltas al inventario.");
   } catch (error) {
     handleErrorServer(res, 500, "Error al eliminar cuadrilla", error.message);
+  }
+}
+
+// Disolver cuadrilla sin devolver stock (se crea acta de devolución aparte)
+export async function dissolverCuadrillaController(req, res) {
+  try {
+    const { id } = req.params;
+    const result = await dissolverCuadrilla(id);
+
+    if (!result) {
+      return handleErrorClient(res, 404, "Cuadrilla no encontrada");
+    }
+
+    handleSuccess(res, 200, "Cuadrilla disuelta exitosamente. Los items sobrantes están pendientes de revisión en el acta de devolución.", result);
+  } catch (error) {
+    handleErrorServer(res, 500, "Error al disolver cuadrilla", error.message);
   }
 }

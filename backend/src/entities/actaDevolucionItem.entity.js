@@ -1,6 +1,6 @@
 import { EntitySchema } from "typeorm";
 
-//Creacion de nueva entidad para manejar su estado
+//Entidad para manejar los items individuales de un acta de devolucion
 export const ActaDevolucionItem = new EntitySchema({
   name: "ActaDevolucionItem",
   tableName: "acta_devolucion_items",
@@ -12,12 +12,18 @@ export const ActaDevolucionItem = new EntitySchema({
     },
     estado: {
       type: "enum",
-      enum: ["Disponible", "Dañada", "Extraviada"],
+      enum: ["Pendiente", "Disponible", "Dañada", "Extraviada"],
+      default: "Pendiente",
       nullable: false,
     },
     cantidad: {
       type: "int",
       nullable: false,
+    },
+    categoria: {
+      type: "varchar",
+      length: 50,
+      nullable: true,
     },
   },
   relations: {

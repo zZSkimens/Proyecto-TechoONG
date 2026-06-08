@@ -102,3 +102,50 @@ export async function deleteCuadrilla(id) {
     await queryRunner.release();
   }
 }
+
+// Disolver cuadrilla: limpia despachos/items SIN devolver stock al inventario
+// (el stock se devuelve cuando el admin_bodega procesa el acta de devolución)
+export async function dissolverCuadrilla(id) {
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    const cuadrillaId = parseInt(id);
+    const cuadrilla = await queryRunner.manager.findOneBy("Cuadrilla", { id: cuadrillaId });
+    if (!cuadrilla) return null;
+
+    // 1. Busca todos los despachos de la cuadrilla
+    const despachos = await queryRunner.manager.find("Despacho", {
+      where: { cuadrilla: { id: cuadrillaId } }
+    });
+
+    for (const despacho of despachos) {
+      // 2. Busca los items de cada despacho
+      const despachoItems = await queryRunner.manager.find("DespachoItem", {
+        where: { despacho: { id: despacho.id } },
+        relations: ["item"]
+      });
+
+      for (const dItem of despachoItems) {
+        // NO se devuelve stock - eso lo maneja el acta de devolución
+        await queryRunner.manager.remove("DespachoItem", dItem);
+      }
+      // Borra despacho
+      await queryRunner.manager.remove("Despacho", despacho);
+    }
+
+    // 3. Finalmente se borra la cuadrilla
+    const cuadrillaData = { name: cuadrilla.name, encargado: cuadrilla.encargado };
+    await queryRunner.manager.remove("Cuadrilla", cuadrilla);
+
+    await queryRunner.commitTransaction();
+    return cuadrillaData;
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
+}
+
