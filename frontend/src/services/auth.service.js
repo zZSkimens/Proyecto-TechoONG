@@ -3,8 +3,8 @@ import { post } from './api.js';
 export async function login(rut, password) {
   const response = await post('/auth/login', { rut, password });
   const { token, user } = response.data;
-  localStorage.setItem('token', token);
-  localStorage.setItem('user', JSON.stringify(user));
+  sessionStorage.setItem('token', token);
+  sessionStorage.setItem('user', JSON.stringify(user));
   return response.data;
 }
 
@@ -14,15 +14,15 @@ export async function register(data) {
 }
 
 export function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
 }
 
 export function getUser() {
-  const user = localStorage.getItem('user');
+  const user = sessionStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 }
 
 export function isAuthenticated() {
-  return !!localStorage.getItem('token');
+  return !!sessionStorage.getItem('token');
 }

@@ -1,7 +1,7 @@
 const BASE_URL = '/api';
 
 function getToken() {
-  return localStorage.getItem('token');
+  return sessionStorage.getItem('token');
 }
 
 async function request(endpoint, options = {}) {

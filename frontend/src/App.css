@@ -9,6 +9,7 @@
   min-height: 100vh;
   background: var(--bg-base);
   position: relative;
+  transition: margin-left 0.25s ease;
 }
 
 /* Gradient decorative line at the top */
@@ -21,6 +22,15 @@
   height: 2px;
   background: linear-gradient(90deg, var(--accent), #a78bfa, var(--accent));
   z-index: 100;
+  transition: left 0.25s ease;
+}
+
+.app-main-collapsed {
+  margin-left: 80px;
+}
+
+.app-main-collapsed::before {
+  left: 80px;
 }
 
 @media (max-width: 768px) {
@@ -30,5 +40,9 @@
   
   .app-main::before {
     left: 0;
+  }
+
+  .app-main-collapsed {
+    margin-left: 0;
   }
 }

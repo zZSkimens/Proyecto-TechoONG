@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { logout, getUser } from '../services/auth.service.js';
 import { useState } from 'react';
+import Modal from './Modal.jsx';
 import '../styles/Sidebar.css';
 
 const ROLE_LINKS = {
@@ -110,7 +111,7 @@ const SECTIONS = [
     ],
   },
   {
-    label: 'Administración',
+    label: 'Administración para Cuadrillas',
     links: [
       {
         to: '/cuadrillas',
@@ -161,10 +162,21 @@ const SECTIONS = [
   },
 ];
 
-export default function Sidebar() {
+const ROLE_LABELS = {
+  jefe_cuadrilla: 'Jefe de Cuadrilla',
+  enc_alimentacion: 'Enc. Alimentación',
+  bodega: 'Personal de Bodega',
+  admin_bodega: 'Admin. Bodega',
+  administrador: 'Administrador',
+  coordinador_viajes: 'Coordinador de Viajes',
+  voluntario: 'Voluntario',
+};
+
+export default function Sidebar({ collapsed, onToggleCollapse }) {
   const user = getUser();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -173,6 +185,7 @@ export default function Sidebar() {
 
   const initial = user?.name ? user.name[0].toUpperCase() : 'U';
   const userRole = user?.role || 'jefe_cuadrilla';
+  const roleLabel = ROLE_LABELS[userRole] || userRole;
   const allowedLinks = ROLE_LINKS[userRole] || [];
 
   return (
@@ -187,14 +200,34 @@ export default function Sidebar() {
         </svg>
       </button>
 
-      <aside className={`sidebar${mobileOpen ? ' open' : ''}`}>
+      <aside className={`sidebar${mobileOpen ? ' open' : ''}${collapsed ? ' collapsed' : ''}`}>
         <div className="sidebar-brand">
           <div className="sidebar-brand-inner">
-            <div className="sidebar-logo">T</div>
-            <div className="sidebar-brand-text">
-              <h3>TechoONG</h3>
+            <div className="sidebar-logo">
+              <svg viewBox="0 0 100 100" width="36" height="36">
+                <circle cx="50" cy="50" r="48" fill="#1DA1D4" />
+                <path d="M50 20 L30 45 L38 45 L38 65 L62 65 L62 45 L70 45 Z" fill="white" />
+              </svg>
             </div>
+            {!collapsed && (
+              <div className="sidebar-brand-text">
+                <h3>TechoONG</h3>
+              </div>
+            )}
           </div>
+          <button
+            className="sidebar-collapse-btn"
+            onClick={onToggleCollapse}
+            title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {collapsed ? (
+                <polyline points="9 18 15 12 9 6" />
+              ) : (
+                <polyline points="15 18 9 12 15 6" />
+              )}
+            </svg>
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -206,7 +239,7 @@ export default function Sidebar() {
 
             return (
               <div key={section.label}>
-                <span className="sidebar-section-label">{section.label}</span>
+                {!collapsed && <span className="sidebar-section-label">{section.label}</span>}
                 {visibleLinks.map((link) => (
                   <NavLink
                     key={link.to}
@@ -215,9 +248,10 @@ export default function Sidebar() {
                       `sidebar-link${isActive ? ' active' : ''}`
                     }
                     onClick={() => setMobileOpen(false)}
+                    title={collapsed ? link.label : undefined}
                   >
                     {link.icon}
-                    {link.label}
+                    {!collapsed && <span>{link.label}</span>}
                   </NavLink>
                 ))}
               </div>
@@ -226,9 +260,14 @@ export default function Sidebar() {
         </nav>
 
         <div className="sidebar-user">
-          <div className="sidebar-user-info">
+          <div className="sidebar-user-info" onClick={() => setShowUserModal(true)} style={{ cursor: 'pointer' }} title="Ver mis datos">
             <div className="sidebar-avatar">{initial}</div>
-            <span className="sidebar-user-email">{user?.name || 'Usuario'}</span>
+            {!collapsed && (
+              <div className="sidebar-user-details">
+                <span className="sidebar-user-name">{user?.name || 'Usuario'}</span>
+                <span className="sidebar-user-role">{roleLabel}</span>
+              </div>
+            )}
           </div>
           <button className="sidebar-logout" onClick={handleLogout} title="Cerrar sesión">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -239,6 +278,67 @@ export default function Sidebar() {
           </button>
         </div>
       </aside>
+
+      <Modal
+        isOpen={showUserModal}
+        onClose={() => setShowUserModal(false)}
+        title="Mi Perfil"
+        footer={
+          <button className="btn btn-ghost" onClick={() => setShowUserModal(false)}>Cerrar</button>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-lg)', padding: 'var(--space-md) 0' }}>
+          <div style={{
+            width: 72,
+            height: 72,
+            borderRadius: '50%',
+            background: 'var(--accent-subtle)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 28,
+            fontWeight: 700,
+            color: 'var(--accent-hover)',
+          }}>
+            {initial}
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+              {user?.name || 'Usuario'}
+            </p>
+            <span style={{
+              display: 'inline-block',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontSize: 12,
+              fontWeight: 600,
+              background: 'var(--accent-subtle)',
+              color: 'var(--accent-hover)',
+            }}>
+              {roleLabel}
+            </span>
+          </div>
+          <div style={{
+            width: '100%',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-md)',
+            padding: 'var(--space-md)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-md)',
+          }}>
+            <div>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Nombre</span>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{user?.name || '-'}</p>
+            </div>
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)' }}>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>RUT</span>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>{user?.rut || '-'}</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

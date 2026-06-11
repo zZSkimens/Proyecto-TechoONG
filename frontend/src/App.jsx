@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import { isAuthenticated, getUser } from './services/auth.service.js';
 import Sidebar from './components/Sidebar.jsx';
 import ToastContainer from './components/Toast.jsx';
@@ -52,10 +53,12 @@ function RoleRoute({ children }) {
 }
 
 function AppLayout({ children }) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <div className="app-layout">
-      <Sidebar />
-      <main className="app-main">
+      <Sidebar collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)} />
+      <main className={`app-main${collapsed ? ' app-main-collapsed' : ''}`}>
         {children}
       </main>
     </div>

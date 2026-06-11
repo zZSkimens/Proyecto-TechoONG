@@ -278,9 +278,9 @@ export default function CuadrillasPage() {
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Encargado</th>
+                <th>Especialista</th>
                 <th>Zona Afectada</th>
-                <th>Fecha</th>
+                <th>Fecha de Inicio</th>
                 <th>Voluntarios Max.</th>
                 <th>Emergencia</th>
                 <th>Creada</th>
@@ -421,7 +421,7 @@ export default function CuadrillasPage() {
             <input
               className="input"
               type="text"
-              placeholder="Ej: Cuadrilla Alfa"
+              placeholder="Ej: Cuadrilla Penco, Lirquen 1"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
@@ -432,7 +432,7 @@ export default function CuadrillasPage() {
             <input
               className="input"
               type="text"
-              placeholder="Nombre del jefe de cuadrilla"
+              placeholder="Encargado de la Cuadrilla"
               value={formData.encargado}
               onChange={(e) => setFormData({ ...formData, encargado: e.target.value })}
               required
@@ -443,7 +443,7 @@ export default function CuadrillasPage() {
             <input
               className="input"
               type="text"
-              placeholder="Ej: Sector Norte, Calle Prat"
+              placeholder="Ej: Hospital Regional"
               value={formData.zona_afectada}
               onChange={(e) => setFormData({ ...formData, zona_afectada: e.target.value })}
               required

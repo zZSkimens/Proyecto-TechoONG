@@ -52,18 +52,14 @@
 }
 
 .login-logo {
-  width: 56px;
-  height: 56px;
+  width: 80px;
+  height: 80px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  background: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  font-weight: 800;
-  color: white;
-  margin-bottom: var(--space-md);
-  box-shadow: 0 0 30px var(--accent-glow);
+  margin: 0 auto var(--space-md);
 }
 
 .login-brand h1 {
