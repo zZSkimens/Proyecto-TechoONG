@@ -5,6 +5,7 @@ import { getCuadrillas, actualizarCuadrilla } from '../services/cuadrillas.servi
 import { getUser } from '../services/auth.service.js';
 import { showToast } from '../helpers/toast.js';
 import Modal from '../components/Modal.jsx';
+import '../styles/Perfiles.css';
 
 const SUGGESTED_COMPETENCIAS = [
   'Carpintería',

@@ -1,0 +1,36 @@
+/* Estilos específicos para la página de Perfiles y Match Inteligente */
+
+.perfiles-page {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Sugerencias Autocomplete */
+.suggestions-container {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  z-index: 10;
+  max-height: 150px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.suggestion-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+  background: var(--glass-bg);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}

@@ -15,16 +15,17 @@ import ViajesPage from './pages/Viajes.jsx';
 import ItemsPage from './pages/Items.jsx';
 import DespachoHerramientasPage from './pages/DespachoHerramientas.jsx';
 import ActaDevolucionPage from './pages/ActaDevolucion.jsx';
+import PerfilesPage from './pages/Perfiles.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
-  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas'],
-  enc_alimentacion: ['/aprobacion', '/trazabilidad'],
-  bodega: ['/despacho', '/inventario'],
-  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion'],
-  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion'],
-  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion'],
-  voluntario: ['/viajes'],
+  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas', '/perfiles'],
+  enc_alimentacion: ['/aprobacion', '/trazabilidad', '/perfiles'],
+  bodega: ['/despacho', '/inventario', '/perfiles'],
+  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
+  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
+  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
+  voluntario: ['/viajes', '/perfiles'],
 };
 
 function getDefaultRoute(role) {
@@ -110,6 +111,9 @@ export default function App() {
                   } />
                   <Route path="/actas-devolucion" element={
                     <RoleRoute><ActaDevolucionPage /></RoleRoute>
+                  } />
+                  <Route path="/perfiles" element={
+                    <RoleRoute><PerfilesPage /></RoleRoute>
                   } />
                   <Route path="*" element={<DefaultRedirect />} />
                 </Routes>
