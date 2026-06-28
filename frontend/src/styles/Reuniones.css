@@ -1,0 +1,85 @@
+.reuniones-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.reuniones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+.reunion-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.reunion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+}
+
+.reunion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.reunion-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.reunion-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.reunion-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.reunion-info svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.reunion-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+.badge-programada {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.badge-completada {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.badge-cancelada {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}

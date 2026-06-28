@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMiPerfil, actualizarMiPerfil, getTodosLosPerfiles, validarPerfilPostulante, getHistorialPerfil } from '../services/perfil.service.js';
 import { getObras, getMatchParaObra } from '../services/obra.service.js';
 import { getCuadrillas, actualizarCuadrilla } from '../services/cuadrillas.service.js';
@@ -33,6 +34,7 @@ export default function PerfilesPage() {
   const user = getUser();
   const isAdmin = user?.role === 'administrador';
   const isCoordinador = user?.role === 'administrador' || user?.role === 'jefe_cuadrilla';
+  const navigate = useNavigate();
 
   // Tab State
   const [activeTab, setActiveTab] = useState('mi-perfil');
@@ -851,6 +853,15 @@ export default function PerfilesPage() {
         footer={
           <>
             <button className="btn btn-ghost" onClick={() => setSelectedPerfil(null)}>Cancelar</button>
+            <button
+              className="btn btn-outline"
+              style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+              onClick={() => {
+                navigate('/reuniones', { state: { agendarParaVoluntarioId: selectedPerfil?.id } });
+              }}
+            >
+              Agendar Reunión
+            </button>
             <button className="btn btn-primary" onClick={handleValidarPerfil} disabled={validating}>
               {validating ? 'Procesando...' : 'Confirmar Evaluación'}
             </button>

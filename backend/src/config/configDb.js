@@ -22,6 +22,7 @@ import { Chofer } from "../entities/chofer.entity.js";
 import { Capacitacion } from "../entities/capacitacion.entity.js";
 import { ActaDevolucionItem } from "../entities/actaDevolucionItem.entity.js";
 import { ActaDevolucion } from "../entities/actaDevolucion.entity.js";
+import { Reunion } from "../entities/reunion.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -34,7 +35,7 @@ export const AppDataSource = new DataSource({
     Voluntario, User, SolicitudAlimento, SolicitudAlimentoItem, Sector, RecepcionEntrega, RecepcionEntregaItem,
     Producto, PerfilCapacitacion, Perfil, OrdenDespacho, OrdenDespachoItem, Obra, MovimientoInventario,
     Item, HistorialEstado, Despliegue, DespachoItem, Despacho, Cuadrilla, Chofer, Capacitacion,
-    ActaDevolucionItem, ActaDevolucion
+    ActaDevolucionItem, ActaDevolucion, Reunion
   ],
   synchronize: true, 
   logging: false,

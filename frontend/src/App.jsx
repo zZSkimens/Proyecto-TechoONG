@@ -16,16 +16,17 @@ import ItemsPage from './pages/Items.jsx';
 import DespachoHerramientasPage from './pages/DespachoHerramientas.jsx';
 import ActaDevolucionPage from './pages/ActaDevolucion.jsx';
 import PerfilesPage from './pages/Perfiles.jsx';
+import ReunionesPage from './pages/Reuniones.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
-  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas', '/perfiles'],
+  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
   enc_alimentacion: ['/aprobacion', '/trazabilidad', '/perfiles'],
   bodega: ['/despacho', '/inventario', '/perfiles'],
   admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
-  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
+  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
   coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
-  voluntario: ['/viajes', '/perfiles'],
+  voluntario: ['/viajes', '/perfiles', '/reuniones'],
 };
 
 function getDefaultRoute(role) {
@@ -114,6 +115,9 @@ export default function App() {
                   } />
                   <Route path="/perfiles" element={
                     <RoleRoute><PerfilesPage /></RoleRoute>
+                  } />
+                  <Route path="/reuniones" element={
+                    <RoleRoute><ReunionesPage /></RoleRoute>
                   } />
                   <Route path="*" element={<DefaultRedirect />} />
                 </Routes>

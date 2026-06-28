@@ -16,6 +16,7 @@ import perfilRoutes from "./perfil.routes.js";
 import sectorRoutes from "./sector.routes.js";
 import voluntarioRoutes from "./voluntario.routes.js";
 import actaDevolucionRoutes from "./actaDevolucion.routes.js";
+import reunionRoutes from "./reunion.routes.js";
 
 
 export function routerApi(app) {
@@ -38,4 +39,5 @@ export function routerApi(app) {
   router.use("/sectores", sectorRoutes);
   router.use("/voluntarios", voluntarioRoutes);
   router.use("/actas-devolucion", actaDevolucionRoutes);
+  router.use("/reuniones", reunionRoutes);
 }
