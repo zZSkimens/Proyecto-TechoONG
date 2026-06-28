@@ -4,7 +4,6 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// Todas las rutas protegidas
 router.use(authMiddleware);
 
 router.get("/", getReuniones);

@@ -17,7 +17,7 @@ export default function ReunionesPage() {
   const [loading, setLoading] = useState(false);
   const [filtroEstado, setFiltroEstado] = useState('programada');
 
-  // Modal de Crear Reunión
+
   const [showModal, setShowModal] = useState(false);
   const [formValidating, setFormValidating] = useState(false);
   const [perfiles, setPerfiles] = useState([]);
@@ -39,7 +39,7 @@ export default function ReunionesPage() {
   }, [isCoordinador]);
 
   useEffect(() => {
-    // Si venimos de Perfiles con un ID preseleccionado para agendar
+  
     if (location.state?.agendarParaVoluntarioId) {
       setFormData(prev => ({
         ...prev,
