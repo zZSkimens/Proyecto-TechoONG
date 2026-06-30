@@ -828,7 +828,7 @@ export default function CuadrillasPage() {
                   </svg>
                   <div>
                     <p style={{ color: 'var(--warning)', fontWeight: 600, fontSize: 14 }}>Esta acción es irreversible</p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Al confirmar, se disolverá la cuadrilla y los items sobrantes serán enviados al acta de devolución para la revisión de bodega.</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Al confirmar, se disolverá la cuadrilla y los items sobrantes serán enviados al acta de devolución, que seran reingresados al inventario.</p>
                   </div>
                 </div>
 
