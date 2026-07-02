@@ -2,7 +2,7 @@ import { createReunionService, getReunionesService, getReunionByIdService, updat
 
 export async function getReuniones(req, res) {
   try {
-    const reuniones = await getReunionesService();
+    const reuniones = await getReunionesService(req.user);
     res.status(200).json({
       message: "Reuniones obtenidas exitosamente",
       data: reuniones,
