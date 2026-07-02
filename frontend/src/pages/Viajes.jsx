@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCuadrillas, crearCuadrilla, eliminarCuadrilla, actualizarCuadrilla } from '../services/cuadrillas.service.js';
+import { getCuadrillas } from '../services/cuadrillas.service.js';
 import { get, post, put, del } from '../services/api.js';
 import Modal from '../components/Modal.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
@@ -22,24 +22,10 @@ export default function ViajesPage() {
 
   // Loading states
   const [loading, setLoading] = useState(true);
-  const [showNewCrew, setShowNewCrew] = useState(false);
   const [showNewDriver, setShowNewDriver] = useState(false);
   const [showNewSector, setShowNewSector] = useState(false);
-  const [submittingCrew, setSubmittingCrew] = useState(false);
   const [submittingDriver, setSubmittingDriver] = useState(false);
   const [submittingSector, setSubmittingSector] = useState(false);
-  
-  // Selection
-  const [selectedCuadrilla, setSelectedCuadrilla] = useState(null);
-
-  // Forms
-  const [crewFormData, setCrewFormData] = useState({
-    name: '',
-    encargado: '',
-    zona_afectada: '',
-    modo_emergencia: false,
-    max_voluntarios: 6,
-  });
 
   const [driverFormData, setDriverFormData] = useState({
     nombres: '',
@@ -113,105 +99,13 @@ export default function ViajesPage() {
       const sectorsData = await get('/sectores');
       setSectors(Array.isArray(sectorsData) ? sectorsData : []);
 
-      // Keep selection in sync
-      if (selectedCuadrilla) {
-        const updated = cuadrillasData.find(c => c.id === selectedCuadrilla.id);
-        setSelectedCuadrilla(updated || null);
-      }
+
     } catch (err) {
       console.error('Error refreshing data', err);
     }
   }
 
-  // Operaciones de la tripulación
-  async function handleCrewSubmit(e) {
-    e.preventDefault();
-    setSubmittingCrew(true);
-    try {
-      await crearCuadrilla({
-        ...crewFormData,
-        max_voluntarios: parseInt(crewFormData.max_voluntarios)
-      });
-      showToast('Cuadrilla de viaje creada exitosamente');
-      setShowNewCrew(false);
-      setCrewFormData({
-        name: '',
-        encargado: '',
-        zona_afectada: '',
-        modo_emergencia: false,
-        max_voluntarios: 6,
-      });
-      loadData();
-    } catch (err) {
-      showToast(err.data?.message || err.message || 'Error al crear cuadrilla', 'error');
-    } finally {
-      setSubmittingCrew(false);
-    }
-  }
 
-  async function handleCrewDelete(id) {
-    if (!window.confirm('¿Está seguro de que desea eliminar esta cuadrilla? Las herramientas asociadas serán devueltas.')) return;
-    try {
-      await eliminarCuadrilla(id);
-      showToast('Cuadrilla eliminada correctamente');
-      if (selectedCuadrilla?.id === id) {
-        setSelectedCuadrilla(null);
-      }
-      loadData();
-    } catch (err) {
-      showToast(err.data?.message || err.message || 'Error al eliminar cuadrilla', 'error');
-    }
-  }
-
-  async function handleAssignVolunteer(volRut) {
-    if (!selectedCuadrilla) return;
-    const currentList = selectedCuadrilla.voluntarios || [];
-    if (currentList.includes(volRut)) {
-      showToast('El voluntario ya está en la cuadrilla', 'warning');
-      return;
-    }
-
-    if (currentList.length >= selectedCuadrilla.max_voluntarios) {
-      showToast(`Cuadrilla llena. Capacidad máxima: ${selectedCuadrilla.max_voluntarios}`, 'error');
-      return;
-    }
-
-    const updatedList = [...currentList, volRut];
-    try {
-      await actualizarCuadrilla(selectedCuadrilla.id, { voluntarios: updatedList });
-      showToast('Voluntario asignado a la cuadrilla');
-      refreshData();
-    } catch (err) {
-      showToast(err.data?.message || err.message || 'Error al asignar voluntario', 'error');
-    }
-  }
-
-  async function handleRemoveVolunteer(volRut) {
-    if (!selectedCuadrilla) return;
-    const currentList = selectedCuadrilla.voluntarios || [];
-    const updatedList = currentList.filter(rut => rut !== volRut);
-    try {
-      await actualizarCuadrilla(selectedCuadrilla.id, { voluntarios: updatedList });
-      showToast('Voluntario retirado de la cuadrilla');
-      refreshData();
-    } catch (err) {
-      showToast(err.data?.message || err.message || 'Error al retirar voluntario', 'error');
-    }
-  }
-
-  function handleEmergenciaChange(e) {
-    const isChecked = e.target.checked;
-    if (isChecked) {
-      if (!window.confirm('¿Está seguro de activar el modo emergencia? Se notificará a los voluntarios y la capacidad se ampliará a 10.')) {
-        return;
-      }
-    }
-    setCrewFormData(prev => ({
-      ...prev,
-      modo_emergencia: isChecked,
-      max_voluntarios: isChecked ? 10 : 6
-    }));
-  }
 
   // Operaciones del conductor
   async function handleDriverSubmit(e) {
@@ -349,8 +243,7 @@ export default function ViajesPage() {
   const activeDeployments = deployments.filter(d => d.estado === 'en_camino');
   const emergencyCrewsCount = cuadrillas.filter(c => c.modo_emergencia).length;
   
-  const assignedVolunteersRuts = new Set(cuadrillas.flatMap(c => c.voluntarios || []));
-  const availableVolunteers = volunteers.filter(v => v.disponible && !assignedVolunteersRuts.has(v.rut));
+
 
   // Registros de movimiento dinámicos para la pestaña de seguimiento
   const generateMovementLogs = () => {
@@ -691,146 +584,42 @@ export default function ViajesPage() {
         <>
           {/* TAB 1: CUADRILLAS */}
           {activeTab === 'planning' && (
-            <div className="planning-container">
-              {/* Left Column: Crews Table */}
-              <div className="table-container">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 600 }}>Planificación de Cuadrillas</h2>
-                  <button className="btn btn-primary btn-sm" onClick={() => setShowNewCrew(true)}>
-                    Nueva Cuadrilla
-                  </button>
+            <div className="table-container">
+              <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 'var(--space-md)' }}>Planificación de Cuadrillas</h2>
+              {cuadrillas.length === 0 ? (
+                <div className="empty-state">
+                  <p>No hay cuadrillas creadas en el sistema</p>
                 </div>
-                {cuadrillas.length === 0 ? (
-                  <div className="empty-state">
-                    <p>No hay cuadrillas creadas en el sistema</p>
-                  </div>
-                ) : (
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Coordinador</th>
-                        <th>Cobertura Inicial</th>
-                        <th>Miembros</th>
-                        <th>Emergencia</th>
-                        <th>Acciones</th>
+              ) : (
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Coordinador</th>
+                      <th>Cobertura Inicial</th>
+                      <th>Miembros</th>
+                      <th>Emergencia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cuadrillas.map((c) => (
+                      <tr key={c.id}>
+                        <td style={{ fontWeight: 600 }}>{c.name}</td>
+                        <td>{c.encargado}</td>
+                        <td>{c.zona_afectada}</td>
+                        <td>{(c.voluntarios || []).length} / {c.max_voluntarios}</td>
+                        <td>
+                          {c.modo_emergencia ? (
+                            <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
+                          ) : (
+                            <span style={{ color: 'var(--text-muted)' }}>No</span>
+                          )}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {cuadrillas.map((c) => (
-                        <tr
-                          key={c.id}
-                          style={{
-                            cursor: 'pointer',
-                            background: selectedCuadrilla?.id === c.id ? 'rgba(239, 108, 0, 0.05)' : '',
-                            borderLeft: selectedCuadrilla?.id === c.id ? '3px solid var(--primary-color)' : ''
-                          }}
-                          onClick={() => setSelectedCuadrilla(c)}
-                        >
-                          <td style={{ fontWeight: 600 }}>{c.name}</td>
-                          <td>{c.encargado}</td>
-                          <td>{c.zona_afectada}</td>
-                          <td>{(c.voluntarios || []).length} / {c.max_voluntarios}</td>
-                          <td>
-                            {c.modo_emergencia ? (
-                              <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
-                            ) : (
-                              <span style={{ color: 'var(--text-muted)' }}>No</span>
-                            )}
-                          </td>
-                          <td onClick={(e) => e.stopPropagation()}>
-                            <button className="btn btn-ghost btn-sm" onClick={() => handleCrewDelete(c.id)} style={{ color: 'var(--error)' }}>
-                              Eliminar
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-
-              {/* Right Column: Member Editor */}
-              <div>
-                {selectedCuadrilla ? (
-                  <div className="crew-details-panel">
-                    <div className="panel-header">
-                      <span className="panel-title">{selectedCuadrilla.name}</span>
-                      {selectedCuadrilla.modo_emergencia && (
-                        <span className="badge badge-rechazada" style={{ fontSize: 11 }}>Emergencia Activa</span>
-                      )}
-                    </div>
-                    
-                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <p><strong>Coordinador:</strong> {selectedCuadrilla.encargado}</p>
-                      <p><strong>Zona de Cobertura:</strong> {selectedCuadrilla.zona_afectada}</p>
-                      <p><strong>Capacidad:</strong> {(selectedCuadrilla.voluntarios || []).length} de {selectedCuadrilla.max_voluntarios} voluntarios</p>
-                    </div>
-
-                    <div style={{ marginTop: 'var(--space-sm)' }}>
-                      <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: '8px' }}>Miembros Asignados</h4>
-                      {(!selectedCuadrilla.voluntarios || selectedCuadrilla.voluntarios.length === 0) ? (
-                        <p style={{ fontStyle: 'italic', fontSize: 12, color: 'var(--text-muted)' }}>Sin miembros asignados.</p>
-                      ) : (
-                        <div className="assigned-volunteers-list">
-                          {volunteers
-                            .filter(v => selectedCuadrilla.voluntarios.includes(v.rut))
-                            .map(v => (
-                              <div key={v.id} className="assigned-volunteer-item">
-                                <div className="assigned-volunteer-info">
-                                  <span className="assigned-name">{v.nombres} {v.apellidos}</span>
-                                  <span className="assigned-rut">{v.rut}</span>
-                                </div>
-                                <button
-                                  className="btn btn-ghost btn-sm"
-                                  style={{ color: 'var(--error)', padding: '2px 6px', fontSize: 12 }}
-                                  onClick={() => handleRemoveVolunteer(v.rut)}
-                                >
-                                  Quitar
-                                </button>
-                              </div>
-                            ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={{ marginTop: 'var(--space-sm)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-md)' }}>
-                      <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: '8px' }}>Asignar Voluntario Disponible</h4>
-                      {availableVolunteers.length === 0 ? (
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>No hay voluntarios disponibles.</p>
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <select
-                            className="select"
-                            defaultValue=""
-                            onChange={(e) => {
-                              if (e.target.value) {
-                                handleAssignVolunteer(e.target.value);
-                                e.target.value = "";
-                              }
-                            }}
-                          >
-                            <option value="" disabled>Seleccione voluntario...</option>
-                            {availableVolunteers.map(v => (
-                              <option key={v.id} value={v.rut}>
-                                {v.nombres} {v.apellidos} ({v.rut})
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="crew-details-panel" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '220px', textAlign: 'center' }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{ color: 'var(--text-muted)', marginBottom: '8px' }}>
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                    </svg>
-                    <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Seleccione una cuadrilla para ver y gestionar sus voluntarios asignados.</p>
-                  </div>
-                )}
-              </div>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
 
@@ -1252,85 +1041,7 @@ export default function ViajesPage() {
         </>
       )}
 
-      {/* New Cuadrilla Modal */}
-      <Modal
-        isOpen={showNewCrew}
-        onClose={() => setShowNewCrew(false)}
-        title="Crear Cuadrilla de Viaje"
-        footer={
-          <>
-            <button type="button" className="btn btn-ghost" onClick={() => setShowNewCrew(false)}>Cancelar</button>
-            <button type="submit" form="new-crew-form" className="btn btn-primary" disabled={submittingCrew}>
-              {submittingCrew ? 'Creando...' : 'Crear Cuadrilla'}
-            </button>
-          </>
-        }
-      >
-        <form id="new-crew-form" onSubmit={handleCrewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-          <div className="form-group">
-            <label className="form-label">Nombre de Cuadrilla *</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Ej: Cuadrilla Centinela"
-              value={crewFormData.name}
-              onChange={(e) => setCrewFormData({ ...crewFormData, name: e.target.value })}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Coordinador/Encargado *</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Nombre del responsable de cuadrilla"
-              value={crewFormData.encargado}
-              onChange={(e) => setCrewFormData({ ...crewFormData, encargado: e.target.value })}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Zona de Cobertura Inicial *</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Ej: Sector Poniente, Calle Prat"
-              value={crewFormData.zona_afectada}
-              onChange={(e) => setCrewFormData({ ...crewFormData, zona_afectada: e.target.value })}
-              required
-            />
-          </div>
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Capacidad de Voluntarios</label>
-              <input
-                className="input"
-                type="number"
-                min="1"
-                max={crewFormData.modo_emergencia ? 10 : 6}
-                value={crewFormData.max_voluntarios}
-                onChange={(e) => {
-                  let val = parseInt(e.target.value) || 1;
-                  const limit = crewFormData.modo_emergencia ? 10 : 6;
-                  if (val > limit) val = limit;
-                  setCrewFormData({ ...crewFormData, max_voluntarios: val });
-                }}
-                required
-              />
-            </div>
-            <div className="form-group" style={{ justifyContent: 'center' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '28px' }}>
-                <input
-                  type="checkbox"
-                  checked={crewFormData.modo_emergencia}
-                  onChange={handleEmergenciaChange}
-                />
-                Modo Emergencia
-              </label>
-            </div>
-          </div>
-        </form>
-      </Modal>
+
 
       {/* New Driver Modal */}
       <Modal
