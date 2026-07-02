@@ -108,33 +108,54 @@ export async function createInitialUsers() {
 
   // Seed de Obras de prueba
   const obraRepository = AppDataSource.getRepository(Obra);
-  const existingObras = await obraRepository.find();
-  if (existingObras.length === 0) {
-    const obrasToSeed = [
-      {
-        nombre: "Construcción Viviendas de Emergencia - Valparaíso",
-        descripcion: "Construcción y techado rápido para campamento afectado por incendios.",
-        zona: "Valparaíso",
-        competencias_requeridas: ["Carpintería", "Electricidad", "Liderazgo de Equipos"],
-        certificaciones_requeridas: ["Curso Prevención de Riesgos", "Primeros Auxilios"]
-      },
-      {
-        nombre: "Reconstrucción Comunitaria - Santiago Centro",
-        descripcion: "Mejoramiento e instalación sanitaria en centro sociocomunitario.",
-        zona: "Santiago",
-        competencias_requeridas: ["Albañilería", "Pintura", "Fontanería/Plomería"],
-        certificaciones_requeridas: ["Primeros Auxilios Avanzado"]
-      },
-      {
-        nombre: "Techado Social - Biobío",
-        descripcion: "Instalación de planchas y estructuras metálicas de soporte.",
-        zona: "Biobío",
-        competencias_requeridas: ["Carpintería", "Estructuras Metálicas"],
-        certificaciones_requeridas: ["Curso Prevención de Riesgos"]
-      }
-    ];
+  const obrasToSeed = [
+    {
+      nombre: "Construcción Viviendas de Emergencia - Incendios Valparaíso",
+      descripcion: "Construcción de viviendas de emergencia (mediaguas) para familias damnificadas por los mega incendios en los cerros de Valparaíso.",
+      zona: "Valparaíso",
+      competencias_requeridas: ["Carpintería", "Electricidad", "Liderazgo de Equipos"],
+      certificaciones_requeridas: ["Curso Prevención de Riesgos", "Primeros Auxilios"]
+    },
+    {
+      nombre: "Levantamiento de Viviendas Progresivas - Santiago",
+      descripcion: "Construcción de módulos habitacionales definitivos para la erradicación de campamentos urbanos apoyados por TECHO.",
+      zona: "Santiago",
+      competencias_requeridas: ["Albañilería", "Pintura", "Fontanería/Plomería"],
+      certificaciones_requeridas: ["Primeros Auxilios Avanzado"]
+    },
+    {
+      nombre: "Reconstrucción Post-Incendios Forestales - Biobío",
+      descripcion: "Armado de viviendas de emergencia, techumbre y limpieza de terrenos para familias afectadas por incendios forestales.",
+      zona: "Biobío",
+      competencias_requeridas: ["Carpintería", "Estructuras Metálicas"],
+      certificaciones_requeridas: ["Curso Prevención de Riesgos"]
+    },
+    {
+      nombre: "Construccion Viviendas de Emergencia - Maule",
+      descripcion: "Construcción rápida de módulos habitacionales para familias que perdieron sus casas",
+      zona: "Maule",
+      competencias_requeridas: ["Carpintería", "Albañilería", "Prevención de Riesgos"],
+      certificaciones_requeridas: []
+    },
+    {
+      nombre: "Construcción de Viviendas Definitivas - Araucanía",
+      descripcion: "Proyecto TECHO: Construcción de viviendas con aislamiento térmico y sellado para comunidades rurales enfrentando bajas temperaturas.",
+      zona: "Araucanía",
+      competencias_requeridas: ["Carpintería", "Estructuras Metálicas"],
+      certificaciones_requeridas: ["Curso Prevención de Riesgos", "Primeros Auxilios"]
+    },
+    {
+      nombre: "Levantamiento de Sede Comunitaria y Viviendas - O'Higgins",
+      descripcion: "Construcción de viviendas de emergencia y una sede comunitaria rápida para familias afectadas por los recientes incendios.",
+      zona: "O'Higgins",
+      competencias_requeridas: ["Pintura", "Logística", "Liderazgo de Equipos"],
+      certificaciones_requeridas: ["Primeros Auxilios Avanzado"]
+    }
+  ];
 
-    for (const obraData of obrasToSeed) {
+  for (const obraData of obrasToSeed) {
+    const existingObra = await obraRepository.findOneBy({ nombre: obraData.nombre });
+    if (!existingObra) {
       const obra = obraRepository.create(obraData);
       await obraRepository.save(obra);
       console.log(`=> Configuración Inicial: Obra creada: ${obraData.nombre}`);
