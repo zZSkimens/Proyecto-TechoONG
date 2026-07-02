@@ -6,7 +6,7 @@ import '../styles/Sidebar.css';
 
 const ROLE_LINKS = {
   jefe_cuadrilla: ['/inicio', '/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
-  enc_alimentacion: ['/inicio', '/aprobacion', '/trazabilidad'],
+  enc_alimentacion: ['/inicio', '/aprobacion', '/trazabilidad', '/despacho', '/inventario'],
   bodega: ['/inicio', '/despacho', '/inventario', '/perfiles'],
   admin_bodega: ['/inicio', '/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
   administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
@@ -81,11 +81,6 @@ const SECTIONS = [
           </svg>
         ),
       },
-    ],
-  },
-  {
-    label: 'Personal de Bodega',
-    links: [
       {
         to: '/despacho',
         label: 'Despacho',
