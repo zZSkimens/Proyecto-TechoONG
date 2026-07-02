@@ -21,7 +21,7 @@ import './App.css';
 
 const ROLE_ROUTES = {
   jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
-  enc_alimentacion: ['/aprobacion', '/trazabilidad', '/perfiles'],
+  enc_alimentacion: ['/aprobacion', '/trazabilidad'],
   bodega: ['/despacho', '/inventario', '/perfiles'],
   admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
   administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
