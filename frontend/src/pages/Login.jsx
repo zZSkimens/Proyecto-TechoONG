@@ -45,8 +45,8 @@ export default function LoginPage() {
         <div className="login-brand">
           <div className="login-logo">
             <svg viewBox="0 0 100 100" width="72" height="72">
-              <circle cx="50" cy="50" r="48" fill="#1DA1D4"/>
-              <path d="M50 20 L30 45 L38 45 L38 65 L62 65 L62 45 L70 45 Z" fill="white"/>
+              <circle cx="50" cy="50" r="48" fill="#1DA1D4" />
+              <path d="M50 20 L30 45 L38 45 L38 65 L62 65 L62 45 L70 45 Z" fill="white" />
             </svg>
           </div>
           <h1>TechoONG</h1>

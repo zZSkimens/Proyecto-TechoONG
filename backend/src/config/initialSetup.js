@@ -49,6 +49,12 @@ export async function createInitialUsers() {
       name: "Pedro Coordinador",
       password: "123456",
       role: "jefe_cuadrilla"
+    },
+    {
+      rut: "87654321-0",
+      name: "Carlos Viajes",
+      password: "123456",
+      role: "coordinador_viajes"
     }
 
   ];
