@@ -291,7 +291,7 @@ export default function ViajesPage() {
           id: `crew-create-${c.id}`,
           timestamp: new Date(c.created_at),
           title: `Planificación de Cuadrilla: ${c.name}`,
-          body: `Registrada para la zona ${c.zona_afectada}. Coordinador responsable: ${c.encargado}.`,
+          body: `Registrada para la zona ${c.zona_afectada}. Especialista responsable: ${c.encargado}.`,
           type: 'normal'
         });
       }
@@ -361,7 +361,7 @@ export default function ViajesPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-md)', fontSize: 14 }}>
                 <div>
-                  <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: 12 }}>Coordinador a Cargo</span>
+                  <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: 12 }}>Especialista a Cargo</span>
                   <strong style={{ color: 'var(--text-primary)' }}>{myCrew.encargado}</strong>
                 </div>
                 <div>
@@ -604,7 +604,7 @@ export default function ViajesPage() {
                     <thead>
                       <tr>
                         <th>Nombre</th>
-                        <th>Coordinador</th>
+                        <th>Especialista</th>
                         <th>Cobertura Inicial</th>
                         <th>Miembros</th>
                         <th>Emergencia</th>
@@ -651,7 +651,7 @@ export default function ViajesPage() {
                     </div>
                     
                     <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <p><strong>Coordinador:</strong> {selectedCuadrilla.encargado}</p>
+                      <p><strong>Especialista:</strong> {selectedCuadrilla.encargado}</p>
                       <p><strong>Zona de Cobertura:</strong> {selectedCuadrilla.zona_afectada}</p>
                       <p><strong>Capacidad:</strong> {(selectedCuadrilla.voluntarios || []).length} de {selectedCuadrilla.max_voluntarios} voluntarios</p>
                     </div>
@@ -944,7 +944,7 @@ export default function ViajesPage() {
                           </div>
 
                           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: '4px' }}>
-                            <p><strong>Coordinador:</strong> {c.encargado}</p>
+                            <p><strong>Especialista:</strong> {c.encargado}</p>
                             <p><strong>Voluntarios:</strong> {(c.voluntarios || []).length} miembros</p>
                             <p><strong>Cobertura:</strong> {c.zona_afectada}</p>
                             
