@@ -26,6 +26,9 @@ export default function ViajesPage() {
   const [showNewSector, setShowNewSector] = useState(false);
   const [submittingDriver, setSubmittingDriver] = useState(false);
   const [submittingSector, setSubmittingSector] = useState(false);
+  
+  // Selection
+  const [selectedCuadrilla, setSelectedCuadrilla] = useState(null);
 
   const [driverFormData, setDriverFormData] = useState({
     nombres: '',
@@ -99,7 +102,11 @@ export default function ViajesPage() {
       const sectorsData = await get('/sectores');
       setSectors(Array.isArray(sectorsData) ? sectorsData : []);
 
-
+      // Keep selection in sync
+      if (selectedCuadrilla) {
+        const updated = cuadrillasData.find(c => c.id === selectedCuadrilla.id);
+        setSelectedCuadrilla(updated || null);
+      }
     } catch (err) {
       console.error('Error refreshing data', err);
     }
@@ -584,42 +591,101 @@ export default function ViajesPage() {
         <>
           {/* TAB 1: CUADRILLAS */}
           {activeTab === 'planning' && (
-            <div className="table-container">
-              <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 'var(--space-md)' }}>Planificación de Cuadrillas</h2>
-              {cuadrillas.length === 0 ? (
-                <div className="empty-state">
-                  <p>No hay cuadrillas creadas en el sistema</p>
-                </div>
-              ) : (
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Coordinador</th>
-                      <th>Cobertura Inicial</th>
-                      <th>Miembros</th>
-                      <th>Emergencia</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cuadrillas.map((c) => (
-                      <tr key={c.id}>
-                        <td style={{ fontWeight: 600 }}>{c.name}</td>
-                        <td>{c.encargado}</td>
-                        <td>{c.zona_afectada}</td>
-                        <td>{(c.voluntarios || []).length} / {c.max_voluntarios}</td>
-                        <td>
-                          {c.modo_emergencia ? (
-                            <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
-                          ) : (
-                            <span style={{ color: 'var(--text-muted)' }}>No</span>
-                          )}
-                        </td>
+            <div className="planning-container">
+              {/* Left Column: Crews Table */}
+              <div className="table-container">
+                <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 'var(--space-md)' }}>Planificación de Cuadrillas</h2>
+                {cuadrillas.length === 0 ? (
+                  <div className="empty-state">
+                    <p>No hay cuadrillas creadas en el sistema</p>
+                  </div>
+                ) : (
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Coordinador</th>
+                        <th>Cobertura Inicial</th>
+                        <th>Miembros</th>
+                        <th>Emergencia</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+                    </thead>
+                    <tbody>
+                      {cuadrillas.map((c) => (
+                        <tr
+                          key={c.id}
+                          style={{
+                            cursor: 'pointer',
+                            background: selectedCuadrilla?.id === c.id ? 'rgba(239, 108, 0, 0.05)' : '',
+                            borderLeft: selectedCuadrilla?.id === c.id ? '3px solid var(--primary-color)' : ''
+                          }}
+                          onClick={() => setSelectedCuadrilla(c)}
+                        >
+                          <td style={{ fontWeight: 600 }}>{c.name}</td>
+                          <td>{c.encargado}</td>
+                          <td>{c.zona_afectada}</td>
+                          <td>{(c.voluntarios || []).length} / {c.max_voluntarios}</td>
+                          <td>
+                            {c.modo_emergencia ? (
+                              <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
+                            ) : (
+                              <span style={{ color: 'var(--text-muted)' }}>No</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              {/* Right Column: Member Details Panel (Read-only) */}
+              <div>
+                {selectedCuadrilla ? (
+                  <div className="crew-details-panel">
+                    <div className="panel-header">
+                      <span className="panel-title">{selectedCuadrilla.name}</span>
+                      {selectedCuadrilla.modo_emergencia && (
+                        <span className="badge badge-rechazada" style={{ fontSize: 11 }}>Emergencia Activa</span>
+                      )}
+                    </div>
+                    
+                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <p><strong>Coordinador:</strong> {selectedCuadrilla.encargado}</p>
+                      <p><strong>Zona de Cobertura:</strong> {selectedCuadrilla.zona_afectada}</p>
+                      <p><strong>Capacidad:</strong> {(selectedCuadrilla.voluntarios || []).length} de {selectedCuadrilla.max_voluntarios} voluntarios</p>
+                    </div>
+
+                    <div style={{ marginTop: 'var(--space-sm)' }}>
+                      <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: '8px' }}>Miembros Asignados</h4>
+                      {(!selectedCuadrilla.voluntarios || selectedCuadrilla.voluntarios.length === 0) ? (
+                        <p style={{ fontStyle: 'italic', fontSize: 12, color: 'var(--text-muted)' }}>Sin miembros asignados.</p>
+                      ) : (
+                        <div className="assigned-volunteers-list">
+                          {volunteers
+                            .filter(v => selectedCuadrilla.voluntarios.includes(v.rut))
+                            .map(v => (
+                              <div key={v.id} className="assigned-volunteer-item">
+                                <div className="assigned-volunteer-info">
+                                  <span className="assigned-name">{v.nombres} {v.apellidos}</span>
+                                  <span className="assigned-rut">{v.rut}</span>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="crew-details-panel" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '220px', textAlign: 'center' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{ color: 'var(--text-muted)', marginBottom: '8px' }}>
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                    </svg>
+                    <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Seleccione una cuadrilla para ver su información y voluntarios asignados.</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
