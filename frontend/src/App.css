@@ -20,7 +20,7 @@
   left: 260px;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent), #a78bfa, var(--accent));
+  background: linear-gradient(90deg, var(--accent), #B2FFFF, var(--accent));
   z-index: 100;
   transition: left 0.25s ease;
 }

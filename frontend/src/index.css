@@ -1,44 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-base: #0f1117;
-  --bg-surface: #161820;
-  --bg-elevated: #1c1e2a;
-  --bg-overlay: rgba(0, 0, 0, 0.6);
+  --bg-base: #D6F7FF;
+  --bg-surface: #e8fbff;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
 
-  --sidebar-bg: #0a0b0f;
-  --sidebar-hover: rgba(99, 102, 241, 0.08);
-  --sidebar-active: rgba(99, 102, 241, 0.15);
+  --sidebar-bg: #c0f0fb;
+  --sidebar-hover: rgba(0, 160, 200, 0.1);
+  --sidebar-active: rgba(0, 160, 200, 0.18);
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #0f1117;
+  --text-primary: #1a2332;
+  --text-secondary: #3d5068;
+  --text-muted: #6b8299;
+  --text-inverse: #ffffff;
 
-  --accent: #6265f0;
-  --accent-hover: #818cf8;
-  --accent-subtle: rgba(99, 102, 241, 0.12);
-  --accent-glow: rgba(99, 102, 241, 0.25);
+  --accent: #1DA1D4;
+  --accent-hover: #0e8ab8;
+  --accent-subtle: rgba(29, 161, 212, 0.12);
+  --accent-glow: rgba(29, 161, 212, 0.25);
 
-  --success: #22c55e;
-  --success-subtle: rgba(34, 197, 94, 0.12);
-  --warning: #f59e0b;
-  --warning-subtle: rgba(245, 158, 11, 0.12);
-  --error: #ef4444;
-  --error-subtle: rgba(239, 68, 68, 0.12);
-  --info: #3b82f6;
-  --info-subtle: rgba(59, 130, 246, 0.12);
+  --success: #16a34a;
+  --success-subtle: rgba(22, 163, 74, 0.12);
+  --warning: #d97706;
+  --warning-subtle: rgba(217, 119, 6, 0.12);
+  --error: #dc2626;
+  --error-subtle: rgba(220, 38, 38, 0.1);
+  --info: #2563eb;
+  --info-subtle: rgba(37, 99, 235, 0.1);
 
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
+  --border: rgba(0, 80, 120, 0.1);
+  --border-hover: rgba(0, 80, 120, 0.2);
   --border-focus: var(--accent);
 
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-bg: rgba(178, 255, 255, 0.25);
+  --glass-border: rgba(0, 80, 120, 0.1);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 60, 90, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 60, 90, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 60, 90, 0.1);
   --shadow-glow: 0 0 20px var(--accent-glow);
 
   --space-xs: 4px;
@@ -66,7 +66,7 @@
   line-height: 1.6;
   color: var(--text-primary);
   background: var(--bg-base);
-  color-scheme: dark;
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -260,7 +260,7 @@ a:hover {
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233d5068' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 36px;
@@ -575,12 +575,12 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-hover);
+  background: rgba(0, 80, 120, 0.15);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: rgba(0, 80, 120, 0.3);
 }
 
 @media (max-width: 768px) {

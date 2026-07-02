@@ -5,16 +5,31 @@ import Modal from './Modal.jsx';
 import '../styles/Sidebar.css';
 
 const ROLE_LINKS = {
-  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
-  enc_alimentacion: ['/aprobacion', '/trazabilidad'],
-  bodega: ['/despacho', '/inventario', '/perfiles'],
-  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
-  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
-  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
-  voluntario: ['/viajes', '/perfiles', '/reuniones'],
+  jefe_cuadrilla: ['/inicio', '/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
+  enc_alimentacion: ['/inicio', '/aprobacion', '/trazabilidad'],
+  bodega: ['/inicio', '/despacho', '/inventario', '/perfiles'],
+  admin_bodega: ['/inicio', '/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
+  administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
+  voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
 };
 
 const SECTIONS = [
+  {
+    label: 'General',
+    links: [
+      {
+        to: '/inicio',
+        label: 'Inicio',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        ),
+      },
+    ],
+  },
   {
     label: 'Jefe de Cuadrilla',
     links: [

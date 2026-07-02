@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login, getUser } from '../services/auth.service.js';
+import { login } from '../services/auth.service.js';
 import '../styles/Login.css';
-
-const ROLE_DEFAULT_ROUTES = {
-  jefe_cuadrilla: '/solicitudes',
-  enc_alimentacion: '/aprobacion',
-  bodega: '/despacho',
-  admin: '/solicitudes',
-};
 
 export default function LoginPage() {
   const [rut, setRut] = useState('');
@@ -29,9 +22,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(rut, password);
-      const user = getUser();
-      const defaultRoute = ROLE_DEFAULT_ROUTES[user?.role] || '/solicitudes';
-      navigate(defaultRoute);
+      navigate('/inicio');
     } catch (err) {
       setError(err.data?.message || err.message || 'Error al iniciar sesión');
     } finally {

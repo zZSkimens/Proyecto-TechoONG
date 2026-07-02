@@ -4,6 +4,7 @@ import { isAuthenticated, getUser } from './services/auth.service.js';
 import Sidebar from './components/Sidebar.jsx';
 import ToastContainer from './components/Toast.jsx';
 import LoginPage from './pages/Login.jsx';
+import HomePage from './pages/Home.jsx';
 import SolicitudesPage from './pages/Solicitudes.jsx';
 import AprobacionPage from './pages/Aprobacion.jsx';
 import DespachoPage from './pages/Despacho.jsx';
@@ -20,18 +21,17 @@ import ReunionesPage from './pages/Reuniones.jsx';
 import './App.css';
 
 const ROLE_ROUTES = {
-  jefe_cuadrilla: ['/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
-  enc_alimentacion: ['/aprobacion', '/trazabilidad'],
-  bodega: ['/despacho', '/inventario', '/perfiles'],
-  admin_bodega: ['/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
-  administrador: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
-  coordinador_viajes: ['/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
-  voluntario: ['/viajes', '/perfiles', '/reuniones'],
+  jefe_cuadrilla: ['/inicio', '/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
+  enc_alimentacion: ['/inicio', '/aprobacion', '/trazabilidad'],
+  bodega: ['/inicio', '/despacho', '/inventario', '/perfiles'],
+  admin_bodega: ['/inicio', '/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
+  administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
+  voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
 };
 
 function getDefaultRoute(role) {
-  const routes = ROLE_ROUTES[role];
-  return routes && routes.length > 0 ? routes[0] : '/solicitudes';
+  return '/inicio';
 }
 
 function ProtectedRoute({ children }) {
@@ -80,6 +80,9 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Routes>
+                  <Route path="/inicio" element={
+                    <RoleRoute><HomePage /></RoleRoute>
+                  } />
                   <Route path="/solicitudes" element={
                     <RoleRoute><SolicitudesPage /></RoleRoute>
                   } />

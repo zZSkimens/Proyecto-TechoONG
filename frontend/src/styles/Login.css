@@ -16,7 +16,7 @@
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
+  background: radial-gradient(circle, rgba(29, 161, 212, 0.15), transparent 70%);
   pointer-events: none;
 }
 
@@ -28,7 +28,7 @@
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.06), transparent 70%);
+  background: radial-gradient(circle, rgba(178, 255, 255, 0.3), transparent 70%);
   pointer-events: none;
 }
 
@@ -87,9 +87,9 @@
 .login-error {
   padding: 10px 14px;
   background: var(--error-subtle);
-  border: 1px solid rgba(132, 64, 221, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.2);
   border-radius: var(--radius-md);
-  color: #fca5a5;
+  color: var(--error);
   font-size: 13px;
   animation: fadeIn 0.2s ease;
 }
