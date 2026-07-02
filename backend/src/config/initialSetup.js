@@ -21,6 +21,12 @@ export async function createInitialUsers() {
       role: "admin_bodega"
     },
     {
+      rut: "17654321-5",
+      name: "María González",
+      password: "EncAlim2024",
+      role: "enc_alimentacion"
+    },
+    {
       rut: "16742589-K",
       name: "Roberto Hurtado",
       password: "JefePass2024",
