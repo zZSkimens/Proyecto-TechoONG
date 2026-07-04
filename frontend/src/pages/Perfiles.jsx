@@ -75,13 +75,12 @@ export default function PerfilesPage() {
 
   // --- Match State ---
   const [obras, setObras] = useState([]);
-  const [selectedObraId, setSelectedObraId] = useState('');
+  const [selectedCuadrillaId, setSelectedCuadrillaId] = useState('');
   const [matchData, setMatchData] = useState(null);
   const [loadingMatch, setLoadingMatch] = useState(false);
   
   // Cuadrilla Selection State
   const [cuadrillas, setCuadrillas] = useState([]);
-  const [selectedCuadrillaForCandidate, setSelectedCuadrillaForCandidate] = useState({}); // mapping: voluntario_id -> cuadrilla_id
   const [assigningCuadrilla, setAssigningCuadrilla] = useState(null); // voluntario_id of candidate being assigned
 
   useEffect(() => {
@@ -286,14 +285,21 @@ export default function PerfilesPage() {
     }
   }
 
-  async function handleCalculateMatch(obraId) {
-    if (!obraId) {
+  async function handleCalculateMatchForCuadrilla(cuadrillaId, listCuadrillas = cuadrillas) {
+    if (!cuadrillaId) {
       setMatchData(null);
       return;
     }
+    const targetCuadrilla = listCuadrillas.find(c => c.id === parseInt(cuadrillaId));
+    if (!targetCuadrilla || (!targetCuadrilla.obra_id && !targetCuadrilla.obra?.id)) {
+      showToast('La cuadrilla seleccionada no tiene una obra técnica asociada', 'warning');
+      setMatchData(null);
+      return;
+    }
+    const obraIdToFetch = targetCuadrilla.obra_id || targetCuadrilla.obra.id;
     setLoadingMatch(true);
     try {
-      const data = await getMatchParaObra(obraId);
+      const data = await getMatchParaObra(obraIdToFetch);
       setMatchData(data);
     } catch (err) {
       showToast(err.message || 'Error al calcular match inteligente', 'error');
@@ -303,41 +309,50 @@ export default function PerfilesPage() {
     }
   }
 
-  // Asignar voluntario a cuadrilla
-  async function handleAssignToCuadrilla(candidate) {
-    const cuadrillaId = selectedCuadrillaForCandidate[candidate.voluntario_id];
-    if (!cuadrillaId) {
-      showToast('Por favor, selecciona una cuadrilla primero.', 'warning');
+  // Asignar voluntario o especialista a cuadrilla
+  async function handleAssignToCuadrilla(candidate, asEspecialista = false) {
+    if (!selectedCuadrillaId) {
+      showToast('Por favor, selecciona una cuadrilla arriba primero.', 'warning');
       return;
     }
-    if (!candidate.rut) {
+    if (!candidate.rut && !asEspecialista) {
       showToast('El voluntario no tiene un RUT asociado en el sistema.', 'error');
       return;
     }
     
     setAssigningCuadrilla(candidate.voluntario_id);
     try {
-      const targetCuadrilla = cuadrillas.find(c => c.id === parseInt(cuadrillaId));
+      const targetCuadrilla = cuadrillas.find(c => c.id === parseInt(selectedCuadrillaId));
       if (!targetCuadrilla) {
         showToast('Cuadrilla no encontrada', 'error');
         return;
       }
       
-      const currentVoluntarios = targetCuadrilla.voluntarios || [];
-      if (currentVoluntarios.includes(candidate.rut)) {
-        showToast('El voluntario ya pertenece a esta cuadrilla', 'warning');
-        return;
+      if (asEspecialista) {
+        if (targetCuadrilla.encargado && targetCuadrilla.encargado !== "") {
+          if (!window.confirm(`Esta cuadrilla ya tiene asignado como especialista a "${targetCuadrilla.encargado}". ¿Deseas reemplazarlo por "${candidate.nombre_completo}"?`)) {
+            return;
+          }
+        }
+        await actualizarCuadrilla(selectedCuadrillaId, { encargado: candidate.nombre_completo });
+        showToast(`Asignado como Especialista / Encargado de: ${targetCuadrilla.name}`);
+      } else {
+        const currentVoluntarios = targetCuadrilla.voluntarios || [];
+        if (currentVoluntarios.includes(candidate.rut)) {
+          showToast('El voluntario ya pertenece a esta cuadrilla', 'warning');
+          return;
+        }
+        if (currentVoluntarios.length >= targetCuadrilla.max_voluntarios) {
+          showToast(`La cuadrilla ya está llena (${targetCuadrilla.max_voluntarios} máx. voluntarios)`, 'error');
+          return;
+        }
+        const newVoluntarios = [...currentVoluntarios, candidate.rut];
+        await actualizarCuadrilla(selectedCuadrillaId, { voluntarios: newVoluntarios });
+        showToast(`Asignado correctamente como voluntario a: ${targetCuadrilla.name}`);
       }
       
-      if (currentVoluntarios.length >= targetCuadrilla.max_voluntarios) {
-        showToast(`La cuadrilla ya está llena (${targetCuadrilla.max_voluntarios} máx.)`, 'error');
-        return;
-      }
-      
-      const newVoluntarios = [...currentVoluntarios, candidate.rut];
-      await actualizarCuadrilla(cuadrillaId, { voluntarios: newVoluntarios });
-      showToast(`Asignado correctamente a la cuadrilla: ${targetCuadrilla.name}`);
-      loadCuadrillas(); // recargar cuadrillas
+      const updatedCuadrillas = await getCuadrillas();
+      setCuadrillas(Array.isArray(updatedCuadrillas) ? updatedCuadrillas : []);
     } catch (err) {
       showToast(err.message || 'Error al asignar a cuadrilla', 'error');
     } finally {
@@ -670,26 +685,26 @@ export default function PerfilesPage() {
       {activeTab === 'match' && isCoordinador && (
         <div>
           <div className="filter-bar" style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', justifyContent: 'space-between' }}>
-            <div className="form-group" style={{ flexGrow: 1, maxWidth: '500px' }}>
-              <label className="form-label">Selecciona una Obra / Construcción</label>
+            <div className="form-group" style={{ flexGrow: 1, maxWidth: '600px' }}>
+              <label className="form-label">Selecciona una Cuadrilla para Asignar Personal</label>
               <select
                 className="select"
-                value={selectedObraId}
+                value={selectedCuadrillaId}
                 onChange={(e) => {
-                  setSelectedObraId(e.target.value);
-                  handleCalculateMatch(e.target.value);
+                  setSelectedCuadrillaId(e.target.value);
+                  handleCalculateMatchForCuadrilla(e.target.value);
                 }}
               >
-                <option value="">-- Seleccionar Obra --</option>
-                {obras.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.nombre} ({o.zona})
+                <option value="">-- Seleccionar Cuadrilla --</option>
+                {cuadrillas.map((q) => (
+                  <option key={q.id} value={q.id}>
+                    {q.name} [Obra: {q.obra?.nombre || 'Sin obra'}] (Esp: {q.encargado ? '1/1' : '0/1'} | Vol: {(q.voluntarios?.length || 0)}/{q.max_voluntarios})
                   </option>
                 ))}
               </select>
             </div>
-            {selectedObraId && (
-              <button className="btn btn-ghost" style={{ marginTop: '24px' }} onClick={() => handleCalculateMatch(selectedObraId)}>
+            {selectedCuadrillaId && (
+              <button className="btn btn-ghost" style={{ marginTop: '24px' }} onClick={() => handleCalculateMatchForCuadrilla(selectedCuadrillaId)}>
                 Recalcular Match
               </button>
             )}
@@ -698,22 +713,36 @@ export default function PerfilesPage() {
           <div style={{ marginTop: '20px' }}>
             {loadingMatch ? (
               <div className="loading"><div className="spinner" /></div>
-            ) : !selectedObraId ? (
+            ) : !selectedCuadrillaId ? (
               <div className="empty-state">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M12 4v16m8-8H4" />
                 </svg>
-                <p>Selecciona una obra para ver los voluntarios recomendados mediante el algoritmo inteligente</p>
+                <p>Selecciona una cuadrilla creada para evaluar e integrar especialistas y voluntarios compatibles</p>
               </div>
-            ) : matchData ? (
+            ) : matchData ? (() => {
+              const selectedQuad = cuadrillas.find(q => q.id === parseInt(selectedCuadrillaId));
+              return (
               <div>
-                {/* Obra Details */}
-                <div className="card" style={{ marginBottom: '20px', background: 'var(--bg-surface)' }}>
-                  <h3 style={{ marginBottom: '12px', color: 'var(--accent-hover)' }}>Requerimientos Técnicos de la Obra: {matchData.obra.nombre}</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                {/* Cuadrilla & Obra Details */}
+                <div className="card" style={{ marginBottom: '20px', background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                    <h3 style={{ margin: 0, color: 'var(--accent-hover)' }}>
+                      Requerimientos de la Cuadrilla: {selectedQuad?.name} <span style={{ fontSize: 14, color: 'var(--text-secondary)', fontWeight: 500 }}>(Obra: {matchData.obra.nombre})</span>
+                    </h3>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <span className="badge" style={{ background: selectedQuad?.encargado ? 'var(--success-subtle)' : 'var(--warning-subtle)', color: selectedQuad?.encargado ? 'var(--success)' : 'var(--warning)', fontWeight: 600 }}>
+                        Especialista: {selectedQuad?.encargado ? `1/1 (${selectedQuad.encargado})` : '0/1 (Falta asignar)'}
+                      </span>
+                      <span className="badge" style={{ background: (selectedQuad?.voluntarios?.length || 0) >= (selectedQuad?.max_voluntarios || 6) ? 'var(--success-subtle)' : 'var(--info-subtle)', color: (selectedQuad?.voluntarios?.length || 0) >= (selectedQuad?.max_voluntarios || 6) ? 'var(--success)' : 'var(--info)', fontWeight: 600 }}>
+                        Voluntarios: {(selectedQuad?.voluntarios?.length || 0)}/{selectedQuad?.max_voluntarios || 6}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginTop: '12px' }}>
                     <div>
-                      <span className="form-label">Zona Geográfica</span>
-                      <p style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{matchData.obra.zona}</p>
+                      <span className="form-label">Zona de Operación</span>
+                      <p style={{ color: 'var(--text-primary)', fontWeight: 500, margin: '4px 0 0 0' }}>{matchData.obra.zona}</p>
                     </div>
                     <div>
                       <span className="form-label">Competencias Requeridas</span>
@@ -735,7 +764,7 @@ export default function PerfilesPage() {
                 </div>
 
                 {/* Match Results */}
-                <h3>Candidatos Compatibles (Ordenados por Afinidad)</h3>
+                <h3>Candidatos Compatibles para esta Cuadrilla</h3>
                 <div className="table-container" style={{ marginTop: '12px' }}>
                   <table className="table">
                     <thead>
@@ -745,11 +774,14 @@ export default function PerfilesPage() {
                         <th>Zona Coincide?</th>
                         <th>Habilidades Match</th>
                         <th>Certificaciones Match</th>
-                        <th>Asignación Rápida a Cuadrilla</th>
+                        <th>Asignación Directa a Cuadrilla</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {matchData.candidatos_compatibles?.map((c, idx) => (
+                      {matchData.candidatos_compatibles?.map((c, idx) => {
+                        const isEspecialista = selectedQuad?.encargado === c.nombre_completo;
+                        const isVoluntario = selectedQuad?.voluntarios?.includes(c.rut);
+                        return (
                         <tr key={idx}>
                           <td style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                             {c.nombre_completo}
@@ -802,33 +834,43 @@ export default function PerfilesPage() {
                             </div>
                           </td>
                           <td>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <select
-                                className="select"
-                                style={{ padding: '4px 8px', fontSize: 12, height: 'auto', minWidth: '130px' }}
-                                value={selectedCuadrillaForCandidate[c.voluntario_id] || ''}
-                                onChange={(e) => setSelectedCuadrillaForCandidate({
-                                  ...selectedCuadrillaForCandidate,
-                                  [c.voluntario_id]: e.target.value
-                                })}
-                              >
-                                <option value="">Seleccionar...</option>
-                                {cuadrillas.map(quad => (
-                                  <option key={quad.id} value={quad.id}>{quad.name} ({quad.voluntarios?.length || 0}/{quad.max_voluntarios})</option>
-                                ))}
-                              </select>
-                              <button
-                                className="btn btn-primary btn-sm"
-                                style={{ padding: '6px 10px', fontSize: 11 }}
-                                onClick={() => handleAssignToCuadrilla(c)}
-                                disabled={assigningCuadrilla === c.voluntario_id}
-                              >
-                                {assigningCuadrilla === c.voluntario_id ? 'Asignando...' : 'Asignar'}
-                              </button>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                              {isEspecialista ? (
+                                <span className="badge" style={{ background: 'var(--success-subtle)', color: 'var(--success)', fontWeight: 700, padding: '6px 10px' }}>
+                                  ✓ Especialista (0/1 Lleno)
+                                </span>
+                              ) : isVoluntario ? (
+                                <span className="badge" style={{ background: 'var(--info-subtle)', color: 'var(--info)', fontWeight: 700, padding: '6px 10px' }}>
+                                  ✓ Voluntario Asignado
+                                </span>
+                              ) : (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline btn-sm"
+                                    style={{ borderColor: 'var(--warning)', color: 'var(--warning)', padding: '6px 10px', fontSize: 11, fontWeight: 600 }}
+                                    onClick={() => handleAssignToCuadrilla(c, true)}
+                                    disabled={assigningCuadrilla === c.voluntario_id || (selectedQuad?.encargado && selectedQuad.encargado !== "")}
+                                    title={selectedQuad?.encargado && selectedQuad.encargado !== "" ? `Ya hay especialista: ${selectedQuad.encargado}` : "Asignar en cupo 0/1 de especialista"}
+                                  >
+                                    ★ Asignar Especialista
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-primary btn-sm"
+                                    style={{ padding: '6px 10px', fontSize: 11 }}
+                                    onClick={() => handleAssignToCuadrilla(c, false)}
+                                    disabled={assigningCuadrilla === c.voluntario_id || (selectedQuad?.voluntarios?.length || 0) >= (selectedQuad?.max_voluntarios || 6)}
+                                  >
+                                    + Asignar Voluntario
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                       {(!matchData.candidatos_compatibles || matchData.candidatos_compatibles.length === 0) && (
                         <tr>
                           <td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
@@ -840,7 +882,8 @@ export default function PerfilesPage() {
                   </table>
                 </div>
               </div>
-            ) : null}
+              );
+            })() : null}
           </div>
         </div>
       )}

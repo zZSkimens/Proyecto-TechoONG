@@ -3,18 +3,32 @@ import { Cuadrilla } from "../entities/cuadrilla.entity.js";
 
 export async function createCuadrilla(data) {
   const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
-  const nuevaCuadrilla = cuadrillaRepository.create(data);
-  return await cuadrillaRepository.save(nuevaCuadrilla);
+  const payload = { ...data };
+  if (data.obra_id) {
+    const obraRepo = AppDataSource.getRepository("Obra");
+    const obra = await obraRepo.findOneBy({ id: parseInt(data.obra_id) });
+    if (obra) {
+      payload.obra = obra;
+      if (!payload.zona_afectada) payload.zona_afectada = obra.zona;
+    }
+    delete payload.obra_id;
+  }
+  if (!payload.encargado) payload.encargado = "";
+  const nuevaCuadrilla = cuadrillaRepository.create(payload);
+  const guardada = await cuadrillaRepository.save(nuevaCuadrilla);
+  guardada.obra_id = guardada.obra ? guardada.obra.id : null;
+  return guardada;
 }
 
 export async function getCuadrillas() {
   const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
   const despachoItemRepository = AppDataSource.getRepository("DespachoItem");
 
-  const cuadrillas = await cuadrillaRepository.find();
+  const cuadrillas = await cuadrillaRepository.find({ relations: ["obra"] });
 
-  // Para cada cuadrilla, buscamos sus items despachados
+  // Para cada cuadrilla, buscamos sus items despachados y mapeamos obra_id
   for (const cuadrilla of cuadrillas) {
+    cuadrilla.obra_id = cuadrilla.obra ? cuadrilla.obra.id : null;
     const items = await despachoItemRepository.find({
       where: { 
         despacho: { 
@@ -39,17 +53,42 @@ export async function getCuadrillas() {
 
 export async function getCuadrillaById(id) {
   const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
-  return await cuadrillaRepository.findOneBy({ id });
+  const cuadrilla = await cuadrillaRepository.findOne({
+    where: { id: parseInt(id) },
+    relations: ["obra"],
+  });
+  if (cuadrilla) {
+    cuadrilla.obra_id = cuadrilla.obra ? cuadrilla.obra.id : null;
+  }
+  return cuadrilla;
 }
 
 export async function updateCuadrilla(id, data) {
   const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
-  const existingCuadrilla = await cuadrillaRepository.findOneBy({ id: parseInt(id) });
+  const existingCuadrilla = await cuadrillaRepository.findOne({
+    where: { id: parseInt(id) },
+    relations: ["obra"],
+  });
 
   if (!existingCuadrilla) return null;
 
-  const updatedCuadrilla = cuadrillaRepository.merge(existingCuadrilla, data);
-  return await cuadrillaRepository.save(updatedCuadrilla);
+  const updatePayload = { ...data };
+  if (data.obra_id !== undefined) {
+    if (data.obra_id) {
+      const obraRepo = AppDataSource.getRepository("Obra");
+      const obra = await obraRepo.findOneBy({ id: parseInt(data.obra_id) });
+      updatePayload.obra = obra || null;
+      if (obra && !updatePayload.zona_afectada) updatePayload.zona_afectada = obra.zona;
+    } else {
+      updatePayload.obra = null;
+    }
+    delete updatePayload.obra_id;
+  }
+
+  const updatedCuadrilla = cuadrillaRepository.merge(existingCuadrilla, updatePayload);
+  const guardada = await cuadrillaRepository.save(updatedCuadrilla);
+  guardada.obra_id = guardada.obra ? guardada.obra.id : null;
+  return guardada;
 }
 
 export async function deleteCuadrilla(id) {

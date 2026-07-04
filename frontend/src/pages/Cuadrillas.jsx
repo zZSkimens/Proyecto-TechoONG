@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { getCuadrillas, crearCuadrilla, disolverCuadrilla as apiDisolverCuadrilla } from '../services/cuadrillas.service.js';
 import { getDespachosByCuadrilla } from '../services/despachoHerramientas.service.js';
 import { crearActaDevolucion } from '../services/actaDevolucion.service.js';
+import { getObras } from '../services/obra.service.js';
 import Modal from '../components/Modal.jsx';
 import { showToast } from '../helpers/toast.js';
 
 export default function CuadrillasPage() {
   const [cuadrillas, setCuadrillas] = useState([]);
+  const [obras, setObras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -14,8 +16,7 @@ export default function CuadrillasPage() {
   const [despachosMap, setDespachosMap] = useState({});
   const [formData, setFormData] = useState({
     name: '',
-    encargado: '',
-    zona_afectada: '',
+    obra_id: '',
     modo_emergencia: false,
     max_voluntarios: 6,
     fecha: '',
@@ -36,8 +37,12 @@ export default function CuadrillasPage() {
   async function loadData() {
     setLoading(true);
     try {
-      const data = await getCuadrillas();
+      const [data, obrasData] = await Promise.all([
+        getCuadrillas(),
+        getObras().catch(() => [])
+      ]);
       setCuadrillas(Array.isArray(data) ? data : []);
+      setObras(Array.isArray(obrasData) ? obrasData : []);
 
       // Cargar despachos para cada cuadrilla
       const despachos = {};
@@ -59,18 +64,22 @@ export default function CuadrillasPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!formData.obra_id) {
+      showToast('Por favor selecciona una Obra a operar', 'warning');
+      return;
+    }
     setSubmitting(true);
     try {
       await crearCuadrilla({
         ...formData,
+        obra_id: parseInt(formData.obra_id),
         max_voluntarios: parseInt(formData.max_voluntarios)
       });
       showToast('Cuadrilla creada exitosamente');
       setShowNew(false);
       setFormData({
         name: '',
-        encargado: '',
-        zona_afectada: '',
+        obra_id: '',
         modo_emergencia: false,
         max_voluntarios: 6,
         fecha: '',
@@ -278,10 +287,11 @@ export default function CuadrillasPage() {
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Especialista</th>
-                <th>Zona Afectada</th>
+                <th>Obra Asignada</th>
+                <th>Especialista (0/1)</th>
+                <th>Zona</th>
                 <th>Fecha de Inicio</th>
-                <th>Voluntarios Max.</th>
+                <th>Voluntarios (N/Max)</th>
                 <th>Emergencia</th>
                 <th>Creada</th>
                 <th>Acciones</th>
@@ -293,10 +303,21 @@ export default function CuadrillasPage() {
                   <tr>
                     <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{c.id}</td>
                     <td>{c.name}</td>
-                    <td>{c.encargado}</td>
+                    <td style={{ fontWeight: 500, color: 'var(--accent)' }}>{c.obra?.nombre || 'General'}</td>
+                    <td>
+                      {c.encargado && c.encargado !== "" ? (
+                        <span className="badge" style={{ background: 'var(--success-subtle)', color: 'var(--success)', fontWeight: 600 }}>1/1 ({c.encargado})</span>
+                      ) : (
+                        <span className="badge" style={{ background: 'var(--warning-subtle)', color: 'var(--warning)', fontWeight: 600 }}>0/1 (Pendiente en Match)</span>
+                      )}
+                    </td>
                     <td>{c.zona_afectada}</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(c.fecha)}</td>
-                    <td>{c.max_voluntarios}</td>
+                    <td style={{ fontWeight: 600 }}>
+                      <span style={{ color: (c.voluntarios?.length || 0) >= c.max_voluntarios ? 'var(--success)' : 'var(--text-primary)' }}>
+                        {(c.voluntarios?.length || 0)}/{c.max_voluntarios}
+                      </span>
+                    </td>
                     <td>
                       {c.modo_emergencia ? (
                         <span style={{ color: 'var(--error)', fontWeight: 600 }}>Sí</span>
@@ -428,26 +449,31 @@ export default function CuadrillasPage() {
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Encargado *</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Encargado de la Cuadrilla"
-              value={formData.encargado}
-              onChange={(e) => setFormData({ ...formData, encargado: e.target.value })}
+            <label className="form-label">Obra a Operar *</label>
+            <select
+              className="select"
+              value={formData.obra_id}
+              onChange={(e) => setFormData({ ...formData, obra_id: e.target.value })}
               required
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Zona Afectada *</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Ej: Hospital Regional"
-              value={formData.zona_afectada}
-              onChange={(e) => setFormData({ ...formData, zona_afectada: e.target.value })}
-              required
-            />
+            >
+              <option value="">-- Seleccionar Obra --</option>
+              {obras.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.nombre} ({o.zona})
+                </option>
+              ))}
+            </select>
+            {formData.obra_id && (() => {
+              const selObra = obras.find(o => o.id === parseInt(formData.obra_id));
+              if (!selObra) return null;
+              return (
+                <div style={{ background: 'var(--glass-bg)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginTop: '8px', fontSize: 13 }}>
+                  <div><strong>Zona de operación:</strong> {selObra.zona}</div>
+                  <div style={{ marginTop: 4 }}><strong>Req. Técnicos:</strong> {selObra.competencias_requeridas?.join(', ') || 'General'}</div>
+                  <div style={{ marginTop: 4 }}><strong>Especialista / Encargado:</strong> <span style={{ color: 'var(--warning)', fontWeight: 600 }}>Se asignará en pestaña de Match (Cupo 0/1)</span></div>
+                </div>
+              );
+            })()}
           </div>
           <div className="form-group">
             <label className="form-label">Fecha de Asignación</label>

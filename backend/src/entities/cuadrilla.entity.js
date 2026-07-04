@@ -18,7 +18,8 @@ export const Cuadrilla = new EntitySchema({
     encargado: {
       type: "varchar",
       length: 255,
-      nullable: false,
+      nullable: true,
+      default: "",
     },
     zona_afectada: {
       type: "varchar",
@@ -51,5 +52,14 @@ export const Cuadrilla = new EntitySchema({
       updateDate: true,
       default: () => "CURRENT_TIMESTAMP",
     }
+  },
+  relations: {
+    obra: {
+      target: "Obra",
+      type: "many-to-one",
+      joinColumn: { name: "obra_id" },
+      nullable: true,
+      eager: true,
+    },
   },
 });

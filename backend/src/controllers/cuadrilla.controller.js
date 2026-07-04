@@ -5,9 +5,10 @@ export async function createCuadrillaController(req, res) {
   try {
     const data = req.body;
 
-    if (!data.name || !data.encargado || !data.zona_afectada) {
-      return handleErrorClient(res, 400, "Nombre, encargado y zona afectada son requeridos");
+    if (!data.name || (!data.zona_afectada && !data.obra_id)) {
+      return handleErrorClient(res, 400, "Nombre y Obra (o zona afectada) son requeridos");
     }
+    if (!data.encargado) data.encargado = "";
 
     const voluntarios = data.voluntarios || [];
     const modoEmergencia = data.modo_emergencia || false;
