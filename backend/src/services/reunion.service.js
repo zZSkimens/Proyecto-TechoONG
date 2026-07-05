@@ -17,7 +17,7 @@ export async function getReunionesService(user) {
   try {
     const reunionRepository = AppDataSource.getRepository(Reunion);
 
-    if (user && (user.role === 'administrador' || user.role === 'jefe_cuadrilla')) {
+    if (user && (user.role === 'administrador' || user.role === 'coordinador' || user.role === 'jefe_cuadrilla')) {
       return await reunionRepository.find({
         order: {
           fecha: "ASC",

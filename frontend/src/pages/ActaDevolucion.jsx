@@ -15,7 +15,7 @@ export default function ActaDevolucionPage() {
   const [revisiones, setRevisiones] = useState({});
 
   const user = getUser();
-  const isAdminBodega = user?.role === 'admin_bodega' || user?.role === 'administrador';
+  const isAdminBodega = user?.role === 'admin_bodega' || user?.role === 'administrador' || user?.role === 'coordinador';
 
   useEffect(() => {
     loadData();

@@ -32,8 +32,9 @@ const SUGGESTED_CERTIFICACIONES = [
 
 export default function PerfilesPage() {
   const user = getUser();
-  const isAdmin = user?.role === 'administrador';
-  const isCoordinador = user?.role === 'administrador' || user?.role === 'jefe_cuadrilla';
+  const isAdmin = user?.role === 'administrador' || user?.role === 'admin';
+  const isCoordinador = user?.role === 'administrador' || user?.role === 'admin' || user?.role === 'jefe_cuadrilla' || user?.role === 'coordinador';
+  const canValidate = isAdmin || isCoordinador;
   const navigate = useNavigate();
 
   // Tab State
@@ -85,7 +86,7 @@ export default function PerfilesPage() {
 
   useEffect(() => {
     loadMiPerfil();
-    if (isAdmin) {
+    if (canValidate) {
       loadTodosLosPerfiles();
     }
     if (isCoordinador) {
@@ -126,7 +127,7 @@ export default function PerfilesPage() {
       await actualizarMiPerfil(perfil);
       showToast('Perfil actualizado correctamente');
       loadMiPerfil();
-      if (isAdmin) {
+      if (canValidate) {
         loadTodosLosPerfiles();
       }
     } catch (err) {
@@ -377,7 +378,7 @@ export default function PerfilesPage() {
         >
           Mi Perfil (CV)
         </button>
-        {isAdmin && (
+        {canValidate && (
           <button
             className={`btn ${activeTab === 'validacion' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setActiveTab('validacion')}
@@ -595,7 +596,7 @@ export default function PerfilesPage() {
       )}
 
       {/* Tab 2: Validación de Postulantes */}
-      {activeTab === 'validacion' && isAdmin && (
+      {activeTab === 'validacion' && canValidate && (
         <div>
           <div className="filter-bar" style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
             <div className="form-group" style={{ minWidth: '150px' }}>
