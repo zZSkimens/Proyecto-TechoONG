@@ -12,12 +12,12 @@ const router = Router();
 router.use(authMiddleware);
 
 // Listar actas (admin_bodega y jefe_cuadrilla pueden ver)
-router.get("/", authorize(["admin_bodega", "jefe_cuadrilla", "coordinador_viajes", "administrador"]), getActasDevolucionController);
+router.get("/", authorize(["admin_bodega", "jefe_cuadrilla", "coordinador_viajes", "administrador", "coordinador"]), getActasDevolucionController);
 
 // Crear acta al disolver cuadrilla (jefe_cuadrilla)
-router.post("/", authorize(["jefe_cuadrilla", "coordinador_viajes", "administrador"]), crearActaDevolucionController);
+router.post("/", authorize(["jefe_cuadrilla", "coordinador_viajes", "administrador", "coordinador"]), crearActaDevolucionController);
 
 // Procesar acta: revisar items y devolver al inventario (admin_bodega)
-router.post("/:id/procesar", authorize(["admin_bodega", "administrador"]), procesarActaDevolucionController);
+router.post("/:id/procesar", authorize(["admin_bodega", "administrador", "coordinador"]), procesarActaDevolucionController);
 
 export default router;

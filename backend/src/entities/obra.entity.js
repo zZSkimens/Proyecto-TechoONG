@@ -21,7 +21,8 @@ export const Obra = new EntitySchema({
     zona: {
       type: "varchar",
       length: 255,
-      nullable: false,
+      nullable: true,
+      default: "Sin asignar",
     },
     competencias_requeridas: {
       type: "json",

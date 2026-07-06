@@ -9,8 +9,8 @@ import '../styles/Reuniones.css';
 
 export default function ReunionesPage() {
   const user = getUser();
-  const isAdmin = user?.role === 'administrador';
-  const isCoordinador = user?.role === 'administrador' || user?.role === 'jefe_cuadrilla';
+  const isAdmin = user?.role === 'administrador' || user?.role === 'coordinador';
+  const isCoordinador = user?.role === 'administrador' || user?.role === 'coordinador' || user?.role === 'jefe_cuadrilla';
   const location = useLocation();
 
   const [reuniones, setReuniones] = useState([]);

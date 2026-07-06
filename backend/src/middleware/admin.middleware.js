@@ -14,8 +14,8 @@ export async function adminMiddleware(req, res, next) {
       return handleErrorClient(res, 404, "Usuario no encontrado.");
     }
 
-    if (usuario.role !== "admin" && usuario.role !== "administrador") {
-      return handleErrorClient(res, 403, "Acceso denegado. Se requieren permisos de administrador.");
+    if (usuario.role !== "admin" && usuario.role !== "administrador" && usuario.role !== "coordinador") {
+      return handleErrorClient(res, 403, "Acceso denegado. Se requieren permisos de administrador o coordinador.");
     }
 
     next();

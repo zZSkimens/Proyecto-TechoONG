@@ -10,6 +10,7 @@ const ROLE_LINKS = {
   bodega: ['/inicio', '/despacho', '/inventario', '/perfiles'],
   admin_bodega: ['/inicio', '/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
   administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
   coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
   voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
 };
@@ -205,6 +206,7 @@ const ROLE_LABELS = {
   bodega: 'Personal de Bodega',
   admin_bodega: 'Admin. Bodega',
   administrador: 'Administrador',
+  coordinador: 'Coordinador',
   coordinador_viajes: 'Coordinador de Viajes',
   voluntario: 'Voluntario',
 };

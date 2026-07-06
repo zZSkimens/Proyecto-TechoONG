@@ -19,6 +19,6 @@ const checkRole = (allowedRoles) => {
 };
 
 export const isAdminBodega = checkRole(["admin_bodega"]);
-export const isJefeCuadrilla = checkRole(["jefe_cuadrilla", "coordinador_viajes", "administrador"]);
+export const isJefeCuadrilla = checkRole(["jefe_cuadrilla", "coordinador_viajes", "administrador", "coordinador"]);
 export const isVoluntario = checkRole(["voluntario"]);
 export const authorize = checkRole;
