@@ -51,17 +51,6 @@ export async function getCuadrillas() {
   return cuadrillas;
 }
 
-export async function getCuadrillaById(id) {
-  const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
-  const cuadrilla = await cuadrillaRepository.findOne({
-    where: { id: parseInt(id) },
-    relations: ["obra"],
-  });
-  if (cuadrilla) {
-    cuadrilla.obra_id = cuadrilla.obra ? cuadrilla.obra.id : null;
-  }
-  return cuadrilla;
-}
 
 export async function updateCuadrilla(id, data) {
   const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
@@ -91,56 +80,6 @@ export async function updateCuadrilla(id, data) {
   return guardada;
 }
 
-export async function deleteCuadrilla(id) {
-  const queryRunner = AppDataSource.createQueryRunner();
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
-
-  try {
-    const cuadrillaId = parseInt(id);
-    const cuadrilla = await queryRunner.manager.findOneBy("Cuadrilla", { id: cuadrillaId });
-    if (!cuadrilla) return null;
-
-    // 1. Busca todos los despachos de la cuadrilla
-    const despachos = await queryRunner.manager.find("Despacho", {
-      where: { cuadrilla: { id: cuadrillaId } }
-    });
-
-    for (const despacho of despachos) {
-      // 2. Busca los items de cada despacho
-      const despachoItems = await queryRunner.manager.find("DespachoItem", {
-        where: { despacho: { id: despacho.id } },
-        relations: ["item"]
-      });
-
-      for (const dItem of despachoItems) {
-        // 3. Si es Herramienta, debe devolver al stock
-        if (dItem.item.category === "Herramienta") {
-          const item = await queryRunner.manager.findOneBy("Item", { id: dItem.item.id });
-          if (item) {
-            item.stock += dItem.cantidad;
-            await queryRunner.manager.save("Item", item);
-          }
-        }
-        // Borra registro del item despachado
-        await queryRunner.manager.remove("DespachoItem", dItem);
-      }
-      // Borra despacho
-      await queryRunner.manager.remove("Despacho", despacho);
-    }
-
-    // 4. Finalmente se borra la cuadrilla
-    await queryRunner.manager.remove("Cuadrilla", cuadrilla);
-
-    await queryRunner.commitTransaction();
-    return true;
-  } catch (error) {
-    await queryRunner.rollbackTransaction();
-    throw error;
-  } finally {
-    await queryRunner.release();
-  }
-}
 
 // Disolver cuadrilla: limpia despachos/items SIN devolver stock al inventario
 // (el stock se devuelve cuando el admin_bodega procesa el acta de devolución)
