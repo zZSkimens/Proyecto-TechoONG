@@ -160,7 +160,25 @@ export async function dissolverCuadrilla(id) {
     });
 
     for (const despacho of despachos) {
-      // 2. Busca los items de cada despacho
+      // 2. Desvincular actas de devolución que referencien este despacho
+      const actas = await queryRunner.manager.find("ActaDevolucion", {
+        where: { despacho: { id: despacho.id } }
+      });
+
+      for (const acta of actas) {
+        // Borrar los items del acta primero
+        const actaItems = await queryRunner.manager.find("ActaDevolucionItem", {
+          where: { acta_devolucion: { id: acta.id } }
+        });
+        for (const actaItem of actaItems) {
+          await queryRunner.manager.remove("ActaDevolucionItem", actaItem);
+        }
+        // Desvincular el despacho del acta (se mantiene el acta como registro histórico)
+        acta.despacho = null;
+        await queryRunner.manager.save("ActaDevolucion", acta);
+      }
+
+      // 3. Busca los items de cada despacho
       const despachoItems = await queryRunner.manager.find("DespachoItem", {
         where: { despacho: { id: despacho.id } },
         relations: ["item"]
