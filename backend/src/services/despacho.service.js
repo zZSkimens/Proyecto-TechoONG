@@ -150,76 +150,87 @@ export async function devolverItems(despachoId, itemsDevueltos) {
     // Validar y procesar cada item del despacho
     for (const dItem of despachoItems) {
       const isHerramienta = dItem.item.category === "Herramienta";
-
       const reqItem = itemsDevueltos.find(i => i.itemId === dItem.item.id);
 
-      if (isHerramienta) {
-        if (!reqItem || !reqItem.estados) {
-          throw new Error(`Falta información de estados para la herramienta: ${dItem.item.name} (ID: ${dItem.item.id}). Es obligatorio reportar el estado de todas las herramientas despachadas.`);
-        }
-
+      if (isHerramienta && reqItem && reqItem.estados) {
         const cantDisponible = reqItem.estados["Disponible"] || 0;
         const cantDanada = reqItem.estados["Dañada"] || 0;
         const cantExtraviada = reqItem.estados["Extraviada"] || 0;
-
         const totalDeclarado = cantDisponible + cantDanada + cantExtraviada;
 
-        if (totalDeclarado !== dItem.cantidad) {
-          throw new Error(`La cantidad total devuelta (${totalDeclarado}) para la herramienta ${dItem.item.name} no coincide con la despachada (${dItem.cantidad}).`);
+        if (totalDeclarado > dItem.cantidad) {
+          throw new Error(`La cantidad total devuelta (${totalDeclarado}) para la herramienta ${dItem.item.name} supera la despachada (${dItem.cantidad}).`);
         }
 
-        // Crear registros de items en el acta
-        const states = [
-          { estado: "Disponible", cantidad: cantDisponible },
-          { estado: "Dañada", cantidad: cantDanada },
-          { estado: "Extraviada", cantidad: cantExtraviada }
-        ];
+        if (totalDeclarado > 0) {
+          const states = [
+            { estado: "Disponible", cantidad: cantDisponible },
+            { estado: "Dañada", cantidad: cantDanada },
+            { estado: "Extraviada", cantidad: cantExtraviada }
+          ];
 
-        for (const st of states) {
-          if (st.cantidad > 0) {
-            const actaItem = queryRunner.manager.create(ActaDevolucionItem, {
-              acta_devolucion: savedActa.id,
-              item: dItem.item.id,
-              estado: st.estado,
-              cantidad: st.cantidad
-            });
-            await queryRunner.manager.save(ActaDevolucionItem, actaItem);
-            devoluciones.push({ itemId: dItem.item.id, itemName: dItem.item.name, estado: st.estado, cantidad: st.cantidad });
+          for (const st of states) {
+            if (st.cantidad > 0) {
+              const actaItem = queryRunner.manager.create(ActaDevolucionItem, {
+                acta_devolucion: savedActa.id,
+                item: dItem.item.id,
+                estado: st.estado,
+                cantidad: st.cantidad
+              });
+              await queryRunner.manager.save(ActaDevolucionItem, actaItem);
+              devoluciones.push({ itemId: dItem.item.id, itemName: dItem.item.name, estado: st.estado, cantidad: st.cantidad });
 
-            // Solo Disponible vuelve al stock regular
-            if (st.estado === "Disponible") {
-              dItem.item.stock += st.cantidad;
-              await queryRunner.manager.save(Item, dItem.item);
+              if (st.estado === "Disponible") {
+                dItem.item.stock += st.cantidad;
+                await queryRunner.manager.save(Item, dItem.item);
+              }
             }
           }
-        }
-      } else {
-        // Es un Material (consumible)
-        if (reqItem && reqItem.estados) {
-          const cantDisponible = reqItem.estados["Disponible"] || 0;
-          if (cantDisponible > 0) {
-            if (cantDisponible > dItem.cantidad) {
-              throw new Error(`No se puede devolver más cantidad de la que fue despachada para el material ID ${dItem.item.id}.`);
-            }
-            const actaItem = queryRunner.manager.create(ActaDevolucionItem, {
-              acta_devolucion: savedActa.id,
-              item: dItem.item.id,
-              estado: "Disponible",
-              cantidad: cantDisponible
-            });
-            await queryRunner.manager.save(ActaDevolucionItem, actaItem);
-            devoluciones.push({ itemId: dItem.item.id, itemName: dItem.item.name, estado: "Disponible", cantidad: cantDisponible });
 
-            dItem.item.stock += cantDisponible;
-            await queryRunner.manager.save(Item, dItem.item);
+          dItem.cantidad -= totalDeclarado;
+          if (dItem.cantidad <= 0) {
+            await queryRunner.manager.remove(DespachoItem, dItem);
+          } else {
+            await queryRunner.manager.save(DespachoItem, dItem);
+          }
+        }
+      } else if (!isHerramienta && reqItem && reqItem.estados) {
+        const cantDisponible = reqItem.estados["Disponible"] || 0;
+        if (cantDisponible > 0) {
+          if (cantDisponible > dItem.cantidad) {
+            throw new Error(`No se puede devolver más cantidad de la que fue despachada para el material ID ${dItem.item.id}.`);
+          }
+          const actaItem = queryRunner.manager.create(ActaDevolucionItem, {
+            acta_devolucion: savedActa.id,
+            item: dItem.item.id,
+            estado: "Disponible",
+            cantidad: cantDisponible
+          });
+          await queryRunner.manager.save(ActaDevolucionItem, actaItem);
+          devoluciones.push({ itemId: dItem.item.id, itemName: dItem.item.name, estado: "Disponible", cantidad: cantDisponible });
+
+          dItem.item.stock += cantDisponible;
+          await queryRunner.manager.save(Item, dItem.item);
+
+          dItem.cantidad -= cantDisponible;
+          if (dItem.cantidad <= 0) {
+            await queryRunner.manager.remove(DespachoItem, dItem);
+          } else {
+            await queryRunner.manager.save(DespachoItem, dItem);
           }
         }
       }
     }
 
-    // Actualizar estado del despacho
-    despacho.estado = "Devuelto";
-    await queryRunner.manager.save(Despacho, despacho);
+    // Revisar si quedan ítems pendientes en el despacho
+    const remainingItems = await queryRunner.manager.count(DespachoItem, {
+      where: { despacho: { id: despachoId } }
+    });
+
+    if (remainingItems === 0) {
+      despacho.estado = "Devuelto";
+      await queryRunner.manager.save(Despacho, despacho);
+    }
 
     await queryRunner.commitTransaction();
     return {

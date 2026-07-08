@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getDespachosCuadrilla, crearDespachoHerramientas } from '../services/despachoHerramientas.service.js';
+import { getDespachosCuadrilla, crearDespachoHerramientas, devolverItems } from '../services/despachoHerramientas.service.js';
 import { getCuadrillas } from '../services/cuadrillas.service.js';
 import { getItems } from '../services/items.service.js';
 import Modal from '../components/Modal.jsx';
@@ -18,6 +18,10 @@ export default function DespachoHerramientasPage() {
     cuadrillaId: '',
     items: [{ itemId: '', cantidad: '' }],
   });
+
+  // --- Estado para Devolución por Despacho ---
+  const [showDevolucion, setShowDevolucion] = useState(null);
+  const [returnForm, setReturnForm] = useState({});
 
   useEffect(() => {
     loadData();
@@ -92,6 +96,101 @@ export default function DespachoHerramientasPage() {
       loadData();
     } catch (err) {
       showToast(err.data?.message || err.message || 'Error al crear despacho', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function openDevolucionModal(despacho) {
+    const initialForm = {};
+    if (despacho.items) {
+      despacho.items.forEach((item) => {
+        if (item.category === 'Herramienta') {
+          initialForm[item.id] = {
+            Disponible: 0,
+            'Dañada': 0,
+            Extraviada: 0,
+          };
+        } else {
+          initialForm[item.id] = {
+            Disponible: 0,
+          };
+        }
+      });
+    }
+    setReturnForm(initialForm);
+    setShowDevolucion(despacho);
+  }
+
+  function updateReturnField(itemId, field, value) {
+    setReturnForm((prev) => ({
+      ...prev,
+      [itemId]: {
+        ...(prev[itemId] || {}),
+        [field]: value === '' ? '' : Math.max(0, parseInt(value || 0, 10)),
+      },
+    }));
+  }
+
+  async function handleDevolucionSubmit(e) {
+    e.preventDefault();
+    if (!showDevolucion) return;
+
+    for (const item of showDevolucion.items || []) {
+      const st = returnForm[item.id] || {};
+      if (item.category === 'Herramienta') {
+        const total =
+          (parseInt(st.Disponible || 0, 10)) +
+          (parseInt(st['Dañada'] || 0, 10)) +
+          (parseInt(st.Extraviada || 0, 10));
+        if (total > item.cantidad) {
+          showToast(
+            `Para la herramienta "${item.name}", la suma declarada (${total}) no puede superar la despachada (${item.cantidad}).`,
+            'error'
+          );
+          return;
+        }
+      } else {
+        const dev = parseInt(st.Disponible || 0, 10);
+        if (dev > item.cantidad) {
+          showToast(
+            `No puede devolver más cantidad de la despachada para el material "${item.name}".`,
+            'error'
+          );
+          return;
+        }
+      }
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = (showDevolucion.items || []).map((item) => {
+        const st = returnForm[item.id] || {};
+        if (item.category === 'Herramienta') {
+          return {
+            itemId: item.id,
+            estados: {
+              Disponible: parseInt(st.Disponible || 0, 10),
+              'Dañada': parseInt(st['Dañada'] || 0, 10),
+              Extraviada: parseInt(st.Extraviada || 0, 10),
+            },
+          };
+        } else {
+          return {
+            itemId: item.id,
+            estados: {
+              Disponible: parseInt(st.Disponible || 0, 10),
+            },
+          };
+        }
+      });
+
+      await devolverItems(showDevolucion.id, payload);
+      showToast('Devolución registrada y stock actualizado exitosamente');
+      setShowDevolucion(null);
+      loadData();
+    } catch (err) {
+      showToast(err.data?.message || err.message || 'Error al procesar la devolución', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -182,17 +281,33 @@ export default function DespachoHerramientasPage() {
                     </td>
                     <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(d.created_at)}</td>
                     <td>
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
-                        title={expandedId === d.id ? "Contraer" : "Expandir"}
-                        style={{ color: 'var(--info)' }}
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ transform: expandedId === d.id ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                        {expandedId === d.id ? 'Contraer' : 'Información'}
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
+                          title={expandedId === d.id ? "Contraer" : "Expandir"}
+                          style={{ color: 'var(--info)' }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{ transform: expandedId === d.id ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                          </svg>
+                          {expandedId === d.id ? 'Contraer' : 'Información'}
+                        </button>
+                        {d.estado === 'Pendiente' && (
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => openDevolucionModal(d)}
+                            title="Devolver ítems de este despacho al stock"
+                            style={{ color: 'var(--primary)' }}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                              <polyline points="1 4 1 10 7 10" />
+                              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                            </svg>
+                            Devolver
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                   {expandedId === d.id && d.items && d.items.length > 0 && (
@@ -377,6 +492,117 @@ export default function DespachoHerramientasPage() {
               </div>
             )}
           </div>
+        )}
+      </Modal>
+
+      {/* Modal Devolución Directa por Despacho */}
+      <Modal
+        isOpen={!!showDevolucion}
+        onClose={() => setShowDevolucion(null)}
+        title={showDevolucion ? `Devolver Ítems — Despacho #${showDevolucion.id}` : ''}
+        large
+        footer={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => setShowDevolucion(null)}>Cancelar</button>
+            <button type="submit" form="devolucion-despacho-form" className="btn btn-primary" disabled={submitting}>
+              {submitting ? 'Procesando...' : 'Confirmar Devolución'}
+            </button>
+          </>
+        }
+      >
+        {showDevolucion && (
+          <form id="devolucion-despacho-form" onSubmit={handleDevolucionSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            <div style={{ background: 'rgba(99, 102, 241, 0.08)', padding: '12px 16px', borderRadius: '8px', fontSize: 13 }}>
+              <strong>Nota:</strong> Puede hacer una devolución total o parcial. Indique las cantidades que desea devolver (o reportar dañadas/extraviadas). Lo que no devuelva permanecerá en poder de la cuadrilla en el despacho.
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {(showDevolucion.items || []).map((item) => {
+                const st = returnForm[item.id] || {};
+                const totalHerramienta =
+                  (parseInt(st.Disponible || 0, 10)) +
+                  (parseInt(st['Dañada'] || 0, 10)) +
+                  (parseInt(st.Extraviada || 0, 10));
+                const isValidHerramienta = totalHerramienta <= item.cantidad;
+
+                return (
+                  <div key={item.id} style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', background: 'var(--bg-secondary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <div>
+                        <strong style={{ fontSize: 15 }}>{item.name}</strong>
+                        <span style={{ marginLeft: '8px', fontSize: 12, padding: '2px 8px', borderRadius: '6px', background: 'var(--bg-tertiary)' }}>
+                          {item.category}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 600 }}>
+                        Despachado: {item.cantidad}
+                      </span>
+                    </div>
+
+                    {item.category === 'Herramienta' ? (
+                      <div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                          <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 12 }}>Disponible</label>
+                            <input
+                              className="input"
+                              type="number"
+                              min="0"
+                              max={item.cantidad}
+                              value={st.Disponible ?? 0}
+                              onChange={(e) => updateReturnField(item.id, 'Disponible', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 12 }}>Dañada</label>
+                            <input
+                              className="input"
+                              type="number"
+                              min="0"
+                              max={item.cantidad}
+                              value={st['Dañada'] ?? 0}
+                              onChange={(e) => updateReturnField(item.id, 'Dañada', e.target.value)}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 12 }}>Extraviada</label>
+                            <input
+                              className="input"
+                              type="number"
+                              min="0"
+                              max={item.cantidad}
+                              value={st.Extraviada ?? 0}
+                              onChange={(e) => updateReturnField(item.id, 'Extraviada', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ marginTop: '8px', fontSize: 12, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
+                          <span>Suma declarada: <strong>{totalHerramienta}</strong> / {item.cantidad}</span>
+                          <span style={{ color: isValidHerramienta ? 'var(--success)' : 'var(--danger)', fontWeight: 600 }}>
+                            {isValidHerramienta ? 'Válido' : 'Supera lo despachado'}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ maxWidth: '240px' }}>
+                        <div className="form-group">
+                          <label className="form-label" style={{ fontSize: 12 }}>Cantidad a devolver al stock</label>
+                          <input
+                            className="input"
+                            type="number"
+                            min="0"
+                            max={item.cantidad}
+                            value={st.Disponible ?? 0}
+                            onChange={(e) => updateReturnField(item.id, 'Disponible', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </form>
         )}
       </Modal>
     </div>

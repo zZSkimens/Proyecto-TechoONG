@@ -118,7 +118,7 @@ export default function ItemsPage() {
     <div className="page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Añadir Productos</h1>
+          <h1 className="page-title">Añadir Items</h1>
           <p className="page-subtitle">Gestionar herramientas y materiales del inventario</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowNew(true)}>
