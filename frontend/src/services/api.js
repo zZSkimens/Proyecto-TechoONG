@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:80/api';
+const BASE_URL = '/api';
 
 function getToken() {
   return sessionStorage.getItem('token');
