@@ -4,7 +4,7 @@ import morgan from "morgan";
 import { AppDataSource, connectDB } from "./config/configDb.js";
 import { routerApi } from "./routes/index.routes.js";
 import { createInitialUsers } from "./config/initialSetup.js";
-
+import cors from "cors";
 const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
