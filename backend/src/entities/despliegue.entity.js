@@ -22,7 +22,25 @@ export const Despliegue = new EntitySchema({
       length: 50,
       default: "pendiente", // pendiente, en_camino, finalizado
     },
-
+    // tracking / monitoring
+    latitud: {
+      type: "varchar",
+      length: 50,
+      nullable: true,
+    },
+    longitud: {
+      type: "varchar",
+      length: 50,
+      nullable: true,
+    },
+    ultima_actualizacion: {
+      type: "timestamp",
+      nullable: true,
+    },
+    seguimiento: {
+      type: "simple-json",
+      nullable: true,
+    },
   },
   relations: {
     cuadrilla: {
@@ -42,6 +60,17 @@ export const Despliegue = new EntitySchema({
         referencedColumnName: "id",
       },
       onDelete: "SET NULL",
+    },
+    sector: {
+      target: "Sector",
+      type: "many-to-one",
+      joinColumn: {
+        name: "sector_id",
+        referencedColumnName: "id",
+      },
+      nullable: true,
+      onDelete: "SET NULL",
+      eager: true,
     },
   },
 });

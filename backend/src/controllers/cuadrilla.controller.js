@@ -1,4 +1,4 @@
-import { createCuadrilla, getCuadrillas, updateCuadrilla, getCuadrillaById, deleteCuadrilla, dissolverCuadrilla } from "../services/cuadrilla.service.js";
+import { createCuadrilla, getCuadrillas, updateCuadrilla, dissolverCuadrilla } from "../services/cuadrilla.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export async function createCuadrillaController(req, res) {
@@ -58,61 +58,12 @@ export async function updateCuadrillaController(req, res) {
   }
 }
 
-export async function joinCuadrillaController(req, res) {
-  try {
-    const { id } = req.params;
-    const userRut = req.user.rut; // Obtenido del token por el authMiddleware
-    const userName = req.user.name;
-
-    // Buscamos la cuadrilla
-    const cuadrilla = await getCuadrillaById(id);
-    if (!cuadrilla) {
-      return handleErrorClient(res, 404, "Cuadrilla no encontrada");
-    }
-
-    // Verificamos si el voluntario ya está en la cuadrilla
-    const listaVoluntarios = cuadrilla.voluntarios || [];
-    if (listaVoluntarios.includes(userRut)) {
-      return handleErrorClient(res, 400, "Ya eres parte de esta cuadrilla");
-    }
-
-    // Verificamos el límite de voluntarios
-    if (listaVoluntarios.length >= cuadrilla.max_voluntarios) {
-      return handleErrorClient(res, 400, `La cuadrilla está llena. El máximo permitido es ${cuadrilla.max_voluntarios}`);
-    }
-
-    // Agregamos al voluntario (guardamos su RUT)
-    listaVoluntarios.push(userRut);
-    const updated = await updateCuadrilla(id, { voluntarios: listaVoluntarios });
-
-    handleSuccess(res, 200, "Te has unido a la cuadrilla exitosamente", updated);
-  } catch (error) {
-    handleErrorServer(res, 500, "Error al unirse a la cuadrilla", error.message);
-  }
-}
-
 export async function getCuadrillasController(req, res) {
   try {
     const cuadrillas = await getCuadrillas();
     handleSuccess(res, 200, "Cuadrillas obtenidas exitosamente", cuadrillas);
   } catch (error) {
     handleErrorServer(res, 500, "Error al obtener cuadrillas", error.message);
-  }
-}
-
-//Eliminamos la cuadrilla y devolveremos las herramientas (solamente eso)
-export async function deleteCuadrillaController(req, res) {
-  try {
-    const { id } = req.params;
-    const result = await deleteCuadrilla(id);
-
-    if (!result) {
-      return handleErrorClient(res, 404, "Cuadrilla no encontrada");
-    }
-
-    handleSuccess(res, 200, "Cuadrilla eliminada exitosamente. Las herramientas han sido devueltas al inventario.");
-  } catch (error) {
-    handleErrorServer(res, 500, "Error al eliminar cuadrilla", error.message);
   }
 }
 
@@ -131,3 +82,4 @@ export async function dissolverCuadrillaController(req, res) {
     handleErrorServer(res, 500, "Error al disolver cuadrilla", error.message);
   }
 }
+

@@ -14,6 +14,7 @@ router.get("/:id", getOrdenById);
 
 router.get("/:id/comprobante", obtenerComprobante);
 
-router.put("/:id/despachar", despachar);
+// Allow dispatch processing via POST to match client usage (no PUT)
+router.post("/:id/despachar", despachar);
 
 export default router;
