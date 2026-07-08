@@ -6,12 +6,12 @@ import '../styles/Sidebar.css';
 
 const ROLE_LINKS = {
   jefe_cuadrilla: ['/inicio', '/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
-  enc_alimentacion: ['/inicio', '/aprobacion', '/trazabilidad', '/despacho', '/inventario'],
+  enc_alimentacion: ['/inicio', '/aprobacion', '/despacho', '/inventario'],
   bodega: ['/inicio', '/despacho', '/inventario', '/perfiles'],
   admin_bodega: ['/inicio', '/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
-  administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
-  coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
-  coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
+  administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
   voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
 };
 
@@ -105,21 +105,6 @@ const SECTIONS = [
           </svg>
         ),
       },
-    ],
-  },
-  {
-    label: 'Seguimiento',
-    links: [
-      {
-        to: '/trazabilidad',
-        label: 'Trazabilidad',
-        icon: (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        ),
-      },
-    ],
   },
   {
     label: 'Administración para Cuadrillas',
