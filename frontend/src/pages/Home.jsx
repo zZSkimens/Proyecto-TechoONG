@@ -32,15 +32,6 @@ const FEATURES = [
     title: 'Coordinación de Voluntarios',
     text: 'Organiza cuadrillas, asigna voluntarios a obras y coordina viajes a terreno.',
   },
-  {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-    title: 'Trazabilidad Completa',
-    text: 'Seguimiento de cada solicitud desde su creación hasta la entrega final con historial de estados.',
-  },
 ];
 
 export default function HomePage() {

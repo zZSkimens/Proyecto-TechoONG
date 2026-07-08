@@ -9,7 +9,6 @@ import SolicitudesPage from './pages/Solicitudes.jsx';
 import AprobacionPage from './pages/Aprobacion.jsx';
 import DespachoPage from './pages/Despacho.jsx';
 import RecepcionPage from './pages/Recepcion.jsx';
-import TrazabilidadPage from './pages/Trazabilidad.jsx';
 import InventarioPage from './pages/Inventario.jsx';
 import CuadrillasPage from './pages/Cuadrillas.jsx';
 import ViajesPage from './pages/Viajes.jsx';
@@ -22,12 +21,12 @@ import './App.css';
 
 const ROLE_ROUTES = {
   jefe_cuadrilla: ['/inicio', '/solicitudes', '/recepcion', '/cuadrillas', '/perfiles', '/reuniones'],
-  enc_alimentacion: ['/inicio', '/aprobacion', '/trazabilidad', '/despacho', '/inventario'],
+  enc_alimentacion: ['/inicio', '/aprobacion', '/despacho', '/inventario'],
   bodega: ['/inicio', '/despacho', '/inventario', '/perfiles'],
   admin_bodega: ['/inicio', '/despacho', '/inventario', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles'],
-  administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
-  coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
-  coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/trazabilidad', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
+  administrador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
+  coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
   voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
 };
 
@@ -96,9 +95,7 @@ export default function App() {
                   <Route path="/recepcion" element={
                     <RoleRoute><RecepcionPage /></RoleRoute>
                   } />
-                  <Route path="/trazabilidad" element={
-                    <RoleRoute><TrazabilidadPage /></RoleRoute>
-                  } />
+
                   <Route path="/inventario" element={
                     <RoleRoute><InventarioPage /></RoleRoute>
                   } />

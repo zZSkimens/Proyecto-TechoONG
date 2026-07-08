@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { getSolicitudes, crearSolicitud } from '../services/solicitudes.service.js';
 import { getProductos } from '../services/productos.service.js';
 import { getUser } from '../services/auth.service.js';
+import { getTrazabilidad } from '../services/recepciones.service.js';
 import StatusBadge from '../components/StatusBadge.jsx';
 import Modal from '../components/Modal.jsx';
 import { showToast } from '../helpers/toast.js';
 import '../styles/Solicitudes.css';
+import '../styles/Trazabilidad.css';
 
 export default function SolicitudesPage() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -23,12 +25,34 @@ export default function SolicitudesPage() {
     items: [{ producto_id: '', cantidad_solicitada: '' }],
   });
   const [submitting, setSubmitting] = useState(false);
+  const [trazabilidad, setTrazabilidad] = useState(null);
+  const [loadingTrazabilidad, setLoadingTrazabilidad] = useState(false);
 
   const user = getUser();
 
   useEffect(() => {
     loadData();
   }, [filtroEstado]);
+
+  useEffect(() => {
+    if (showDetail) {
+      loadTrazabilidad(showDetail.id);
+    } else {
+      setTrazabilidad(null);
+    }
+  }, [showDetail]);
+
+  async function loadTrazabilidad(id) {
+    setLoadingTrazabilidad(true);
+    try {
+      const data = await getTrazabilidad(id);
+      setTrazabilidad(data);
+    } catch (err) {
+      setTrazabilidad(null);
+    } finally {
+      setLoadingTrazabilidad(false);
+    }
+  }
 
   async function loadData() {
     setLoading(true);
@@ -412,6 +436,122 @@ export default function SolicitudesPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            {/* Trazabilidad */}
+            <div className="detail-section" style={{ marginTop: 'var(--space-lg)', paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--border)' }}>
+              <h3>Trazabilidad</h3>
+              {loadingTrazabilidad ? (
+                <div className="loading"><div className="spinner" /></div>
+              ) : trazabilidad ? (
+                <>
+                  <div className={`flujo-badge ${trazabilidad.flujo_completo ? 'completo' : 'en-proceso'}`}>
+                    {trazabilidad.flujo_completo ? (
+                      <>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        Flujo Completo
+                      </>
+                    ) : (
+                      <>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        En Proceso — {trazabilidad.estado_actual}
+                      </>
+                    )}
+                  </div>
+
+                  <div className="timeline">
+                    {/* Solicitud */}
+                    <div className="timeline-step">
+                      <div className={`timeline-dot ${trazabilidad.solicitud ? 'completed' : ''}`} />
+                      <div className="timeline-content">
+                        <div className="timeline-title">Solicitud Creada <StatusBadge estado={trazabilidad.solicitud?.estado} /></div>
+                        <div className="timeline-date">{formatDate(trazabilidad.solicitud?.created_at)}</div>
+                        <div className="detail-grid">
+                          <div className="detail-item">
+                            <span className="detail-label">Solicitante</span>
+                            <span className="detail-value">{trazabilidad.solicitud?.nombre_solicitante}</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="detail-label">Destino</span>
+                            <span className="detail-value">{trazabilidad.solicitud?.destino}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Aprobación */}
+                    <div className="timeline-step">
+                      <div className={`timeline-dot ${trazabilidad.solicitud?.fecha_aprobacion ? 'completed' : ''}`} />
+                      <div className={`timeline-content${!trazabilidad.solicitud?.fecha_aprobacion ? ' inactive' : ''}`}>
+                        <div className="timeline-title">Aprobación</div>
+                        {trazabilidad.solicitud?.fecha_aprobacion ? (
+                          <>
+                            <div className="timeline-date">{formatDate(trazabilidad.solicitud.fecha_aprobacion)}</div>
+                            <div className="detail-item">
+                              <span className="detail-label">Aprobado por</span>
+                              <span className="detail-value">{trazabilidad.solicitud.aprobado_por || '-'}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <p style={{ fontSize: 14 }}>Pendiente de aprobación</p>
+                        )}
+                        {trazabilidad.solicitud?.motivo_rechazo && (
+                          <div className="detail-item" style={{ marginTop: 'var(--space-sm)' }}>
+                            <span className="detail-label">Motivo de Rechazo</span>
+                            <span className="detail-value" style={{ color: 'var(--error)' }}>{trazabilidad.solicitud.motivo_rechazo}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Despacho */}
+                    <div className="timeline-step">
+                      <div className={`timeline-dot ${trazabilidad.orden_despacho ? 'completed' : ''}`} />
+                      <div className={`timeline-content${!trazabilidad.orden_despacho ? ' inactive' : ''}`}>
+                        <div className="timeline-title">Despacho {trazabilidad.orden_despacho && <StatusBadge estado={trazabilidad.orden_despacho.estado} />}</div>
+                        {trazabilidad.orden_despacho ? (
+                          <>
+                            {trazabilidad.orden_despacho.fecha_despacho && (
+                              <div className="timeline-date">{formatDate(trazabilidad.orden_despacho.fecha_despacho)}</div>
+                            )}
+                            <div className="detail-item">
+                              <span className="detail-label">Orden Nº</span>
+                              <span className="detail-value">#{trazabilidad.orden_despacho.id}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <p style={{ fontSize: 14 }}>Pendiente de despacho</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Recepción */}
+                    <div className="timeline-step">
+                      <div className={`timeline-dot ${trazabilidad.recepcion ? 'completed' : ''}`} />
+                      <div className={`timeline-content${!trazabilidad.recepcion ? ' inactive' : ''}`}>
+                        <div className="timeline-title">Recepción {trazabilidad.recepcion && <StatusBadge estado={trazabilidad.recepcion.estado_general} />}</div>
+                        {trazabilidad.recepcion ? (
+                          <>
+                            <div className="timeline-date">{formatDate(trazabilidad.recepcion.fecha_recepcion)}</div>
+                            <div className="detail-item">
+                              <span className="detail-label">Recibido por</span>
+                              <span className="detail-value">{trazabilidad.recepcion.recibido_por}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <p style={{ fontSize: 14 }}>Pendiente de recepción</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p style={{ fontSize: 14, color: 'var(--text-muted)' }}>Sin información de trazabilidad disponible</p>
+              )}
             </div>
           </>
         )}
