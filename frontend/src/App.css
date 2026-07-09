@@ -12,7 +12,6 @@
   transition: margin-left 0.25s ease;
 }
 
-/* Gradient decorative line at the top */
 .app-main::before {
   content: '';
   position: fixed;

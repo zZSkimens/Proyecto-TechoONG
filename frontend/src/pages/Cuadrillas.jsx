@@ -22,7 +22,6 @@ export default function CuadrillasPage() {
     fecha: '',
   });
 
-  // --- Estado de Disolución ---
   const [showDisolver, setShowDisolver] = useState(false);
   const [disolverCuadrilla, setDisolverCuadrilla] = useState(null);
   const [disolverStep, setDisolverStep] = useState(1); // 1=días, 2=items usados, 3=resumen
@@ -44,7 +43,6 @@ export default function CuadrillasPage() {
       setCuadrillas(Array.isArray(data) ? data : []);
       setObras(Array.isArray(obrasData) ? obrasData : []);
 
-      // Cargar despachos para cada cuadrilla
       const despachos = {};
       for (const cuadrilla of Array.isArray(data) ? data : []) {
         try {
@@ -92,14 +90,12 @@ export default function CuadrillasPage() {
     }
   }
 
-  // --- Flujo de Disolución ---
   function openDisolverModal(cuadrilla) {
     const despachos = despachosMap[cuadrilla.id] || [];
     setDisolverCuadrilla(cuadrilla);
     setDisolverStep(1);
     setDiasTrabajados(1);
 
-    // Inicializar items usados vacíos para todos los items de despachos pendientes
     const initial = {};
     despachos.forEach(despacho => {
       if (despacho.estado === 'Pendiente' && despacho.items) {
@@ -126,7 +122,6 @@ export default function CuadrillasPage() {
     return despachos.filter(d => d.estado === 'Pendiente');
   }
 
-  // Obtener todos los items de los despachos pendientes agrupados
   function getAllItemsFromDespachos() {
     const pendientes = getDespachosPendientes();
     const allItems = [];
@@ -147,7 +142,6 @@ export default function CuadrillasPage() {
     return allItems;
   }
 
-  // Calcular resumen de sobrantes
   function getResumenSobrantes() {
     const allItems = getAllItemsFromDespachos();
     return allItems.map(item => {
@@ -162,7 +156,6 @@ export default function CuadrillasPage() {
   }
 
   function handleItemUsadoChange(key, value, maxCantidad) {
-    // Permitir campo vacío para mejor UX
     if (value === '') {
       setItemsUsados(prev => ({ ...prev, [key]: '' }));
       return;
@@ -173,13 +166,11 @@ export default function CuadrillasPage() {
     setItemsUsados(prev => ({ ...prev, [key]: val }));
   }
 
-  // Validaciones de paso
   function canAdvanceStep() {
     if (disolverStep === 1) {
       return diasTrabajados >= 1 && diasTrabajados <= 5;
     }
     if (disolverStep === 2) {
-      // Validar que ningún item usado exceda la cantidad despachada
       const allItems = getAllItemsFromDespachos();
       for (const item of allItems) {
         const usado = parseInt(itemsUsados[item.key]) || 0;
@@ -203,7 +194,6 @@ export default function CuadrillasPage() {
           cantidad: item.cantidadSobrante
         }));
 
-      // Si hay items sobrantes, creamos el acta de devolución
       if (itemsSobrantes.length > 0) {
         await crearActaDevolucion({
           cuadrilla_nombre: disolverCuadrilla.name,
@@ -213,7 +203,6 @@ export default function CuadrillasPage() {
         });
       }
 
-      // Disolver cuadrilla (elimina despachos, items y la propia cuadrilla sin afectar stock)
       await apiDisolverCuadrilla(disolverCuadrilla.id);
 
       if (itemsSobrantes.length > 0) {
@@ -247,7 +236,6 @@ export default function CuadrillasPage() {
     }));
   }
 
-  // Resumen para el paso 3
   const resumenSobrantes = disolverStep === 3 ? getResumenSobrantes() : [];
   const totalSobrantes = resumenSobrantes.reduce((sum, r) => sum + r.cantidadSobrante, 0);
   const totalUsados = resumenSobrantes.reduce((sum, r) => sum + r.cantidadUsada, 0);

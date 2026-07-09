@@ -26,7 +26,6 @@ export async function getCuadrillas() {
 
   const cuadrillas = await cuadrillaRepository.find({ relations: ["obra"] });
 
-  // Para cada cuadrilla, buscamos sus items despachados y mapeamos obra_id
   for (const cuadrilla of cuadrillas) {
     cuadrilla.obra_id = cuadrilla.obra ? cuadrilla.obra.id : null;
     const items = await despachoItemRepository.find({
@@ -39,7 +38,6 @@ export async function getCuadrillas() {
       relations: ["item"]
     });
 
-    // Agrupamos y formateamos los items para que sean fáciles de leer
     cuadrilla.items_asignados = items.map(di => ({
       id: di.item.id,
       nombre: di.item.name,
@@ -80,9 +78,6 @@ export async function updateCuadrilla(id, data) {
   return guardada;
 }
 
-
-// Disolver cuadrilla: limpia despachos/items SIN devolver stock al inventario
-// (el stock se devuelve cuando el admin_bodega procesa el acta de devolución)
 export async function dissolverCuadrilla(id) {
   const queryRunner = AppDataSource.createQueryRunner();
   await queryRunner.connect();
@@ -93,45 +88,37 @@ export async function dissolverCuadrilla(id) {
     const cuadrilla = await queryRunner.manager.findOneBy("Cuadrilla", { id: cuadrillaId });
     if (!cuadrilla) return null;
 
-    // 1. Busca todos los despachos de la cuadrilla
     const despachos = await queryRunner.manager.find("Despacho", {
       where: { cuadrilla: { id: cuadrillaId } }
     });
 
     for (const despacho of despachos) {
-      // 2. Desvincular actas de devolución que referencien este despacho
       const actas = await queryRunner.manager.find("ActaDevolucion", {
         where: { despacho: { id: despacho.id } }
       });
 
       for (const acta of actas) {
-        // Borrar los items del acta primero
         const actaItems = await queryRunner.manager.find("ActaDevolucionItem", {
           where: { acta_devolucion: { id: acta.id } }
         });
         for (const actaItem of actaItems) {
           await queryRunner.manager.remove("ActaDevolucionItem", actaItem);
         }
-        // Desvincular el despacho del acta (se mantiene el acta como registro histórico)
         acta.despacho = null;
         await queryRunner.manager.save("ActaDevolucion", acta);
       }
 
-      // 3. Busca los items de cada despacho
       const despachoItems = await queryRunner.manager.find("DespachoItem", {
         where: { despacho: { id: despacho.id } },
         relations: ["item"]
       });
 
       for (const dItem of despachoItems) {
-        // NO se devuelve stock - eso lo maneja el acta de devolución
         await queryRunner.manager.remove("DespachoItem", dItem);
       }
-      // Borra despacho
       await queryRunner.manager.remove("Despacho", despacho);
     }
 
-    // 3. Finalmente se borra la cuadrilla
     const cuadrillaData = { name: cuadrilla.name, encargado: cuadrilla.encargado };
     await queryRunner.manager.remove("Cuadrilla", cuadrilla);
 

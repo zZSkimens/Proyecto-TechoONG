@@ -52,7 +52,6 @@ export const RecepcionEntrega = new EntitySchema({
   },
 });
 
-// Items recibidos con detalle de estado
 export const RecepcionEntregaItem = new EntitySchema({
   name: "RecepcionEntregaItem",
   tableName: "recepcion_entrega_items",

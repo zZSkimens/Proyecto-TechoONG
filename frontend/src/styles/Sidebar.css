@@ -1,4 +1,3 @@
-/* ===== SIDEBAR ===== */
 .sidebar {
   position: fixed;
   top: 0;
@@ -19,7 +18,6 @@
   width: 80px;
 }
 
-/* Logo area */
 .sidebar-brand {
   padding: var(--space-lg) var(--space-md) var(--space-md);
   border-bottom: 1px solid var(--border);
@@ -193,7 +191,6 @@
   max-width: 140px;
 }
 
-/* Collapse button */
 .sidebar-collapse-btn {
   background: none;
   border: none;
@@ -217,7 +214,6 @@
   height: 18px;
 }
 
-/* Collapsed overrides */
 .collapsed .sidebar-nav {
   padding: var(--space-sm);
   align-items: center;

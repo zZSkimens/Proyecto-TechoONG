@@ -78,7 +78,6 @@ export const SolicitudAlimento = new EntitySchema({
   },
 });
 
-// Items individuales de cada solicitud
 export const SolicitudAlimentoItem = new EntitySchema({
   name: "SolicitudAlimentoItem",
   tableName: "solicitud_alimento_items",

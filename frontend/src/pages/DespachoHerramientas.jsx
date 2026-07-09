@@ -19,7 +19,6 @@ export default function DespachoHerramientasPage() {
     items: [{ itemId: '', cantidad: '' }],
   });
 
-  // --- Estado para Devolución por Despacho ---
   const [showDevolucion, setShowDevolucion] = useState(null);
   const [returnForm, setReturnForm] = useState({});
 

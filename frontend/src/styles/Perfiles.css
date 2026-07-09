@@ -1,10 +1,7 @@
-/* Estilos específicos para la página de Perfiles y Match Inteligente */
-
 .perfiles-page {
   animation: fadeIn 0.3s ease;
 }
 
-/* Sugerencias Autocomplete */
 .suggestions-container {
   position: absolute;
   top: 70px;

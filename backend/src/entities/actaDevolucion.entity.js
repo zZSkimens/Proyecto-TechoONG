@@ -1,6 +1,5 @@
 import { EntitySchema } from "typeorm";
 
-//Entidad para manejar las actas de devolucion de items al disolver cuadrillas
 export const ActaDevolucion = new EntitySchema({
   name: "ActaDevolucion",
   tableName: "acta_devolucion",

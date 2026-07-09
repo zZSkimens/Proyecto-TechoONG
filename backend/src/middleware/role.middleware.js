@@ -1,9 +1,7 @@
 import { handleErrorClient } from "../Handlers/responseHandlers.js";
 
-//Verifico los roles
 const checkRole = (allowedRoles) => {
   return (req, res, next) => {
-    // El usuario debe estar autenticado previamente
     const user = req.user;
 
     if (!user) {

@@ -12,13 +12,11 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
   await queryRunner.startTransaction();
 
   try {
-    // 1. Verificamos la cuadrilla
     const cuadrilla = await queryRunner.manager.findOneBy(Cuadrilla, { id: cuadrillaId });
     if (!cuadrilla) {
       throw new Error("La cuadrilla no existe");
     }
 
-    // 2. Creamos el registro de Despacho
     const despacho = queryRunner.manager.create(Despacho, {
       cuadrilla: cuadrillaId
     });
@@ -26,7 +24,6 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
 
     const despachoItemsDetails = [];
 
-    // 3. Procesamos los items y validamos el stock
     for (const reqItem of itemsToDispatch) {
       const item = await queryRunner.manager.findOneBy(Item, { id: reqItem.itemId });
       if (!item) {
@@ -39,7 +36,6 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
       item.stock -= reqItem.cantidad;
       await queryRunner.manager.save(Item, item);
 
-      // Crea el registro de en el DespachoItem
       const despachoItem = queryRunner.manager.create(DespachoItem, {
         despacho: savedDespacho.id,
         item: item.id,
@@ -49,7 +45,6 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
       despachoItemsDetails.push({ ...savedDespachoItem, item_name: item.name });
     }
 
-    // 4. Confirmamos la transacción de items (Herramientas y Materiales)
     await queryRunner.commitTransaction();
 
     return {
@@ -58,7 +53,6 @@ export async function createDespacho(cuadrillaId, itemsToDispatch) {
     };
 
   } catch (error) {
-    // Revertir todo en caso de error
     await queryRunner.rollbackTransaction();
     throw error;
   } finally {
@@ -147,7 +141,6 @@ export async function devolverItems(despachoId, itemsDevueltos) {
 
     const devoluciones = [];
 
-    // Validar y procesar cada item del despacho
     for (const dItem of despachoItems) {
       const isHerramienta = dItem.item.category === "Herramienta";
       const reqItem = itemsDevueltos.find(i => i.itemId === dItem.item.id);
@@ -222,7 +215,6 @@ export async function devolverItems(despachoId, itemsDevueltos) {
       }
     }
 
-    // Revisar si quedan ítems pendientes en el despacho
     const remainingItems = await queryRunner.manager.count(DespachoItem, {
       where: { despacho: { id: despachoId } }
     });

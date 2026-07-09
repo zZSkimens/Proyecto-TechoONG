@@ -13,21 +13,18 @@ export default function ViajesPage() {
 
   const [activeTab, setActiveTab] = useState('planning');
   
-  // Data lists
   const [cuadrillas, setCuadrillas] = useState([]);
   const [volunteers, setVolunteers] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [deployments, setDeployments] = useState([]);
 
-  // Loading states
   const [loading, setLoading] = useState(true);
   const [showNewDriver, setShowNewDriver] = useState(false);
   const [showNewSector, setShowNewSector] = useState(false);
   const [submittingDriver, setSubmittingDriver] = useState(false);
   const [submittingSector, setSubmittingSector] = useState(false);
   
-  // Selection
   const [selectedCuadrilla, setSelectedCuadrilla] = useState(null);
 
   const [driverFormData, setDriverFormData] = useState({
@@ -60,23 +57,18 @@ export default function ViajesPage() {
   async function loadData() {
     setLoading(true);
     try {
-      // Cuadrillas
       const cuadrillasData = await getCuadrillas();
       setCuadrillas(Array.isArray(cuadrillasData) ? cuadrillasData : []);
 
-      // Voluntarios
       const volRes = await get('/voluntarios');
       setVolunteers(Array.isArray(volRes?.data) ? volRes.data : []);
 
-      // Choferes
       const driversData = await get('/choferes');
       setDrivers(Array.isArray(driversData) ? driversData : []);
 
-      // Sectores
       const sectorsData = await get('/sectores');
       setSectors(Array.isArray(sectorsData) ? sectorsData : []);
 
-      // Despliegues
       const deploymentsData = await get('/despliegues');
       setDeployments(Array.isArray(deploymentsData) ? deploymentsData : []);
 
@@ -87,7 +79,6 @@ export default function ViajesPage() {
     }
   }
 
-  // Actualizar datos después de operaciones clave 
   async function refreshData() {
     try {
       const cuadrillasData = await getCuadrillas();
@@ -102,7 +93,6 @@ export default function ViajesPage() {
       const sectorsData = await get('/sectores');
       setSectors(Array.isArray(sectorsData) ? sectorsData : []);
 
-      // Keep selection in sync
       if (selectedCuadrilla) {
         const updated = cuadrillasData.find(c => c.id === selectedCuadrilla.id);
         setSelectedCuadrilla(updated || null);
@@ -112,9 +102,6 @@ export default function ViajesPage() {
     }
   }
 
-
-
-  // Operaciones del conductor
   async function handleDriverSubmit(e) {
     e.preventDefault();
     setSubmittingDriver(true);
@@ -137,7 +124,6 @@ export default function ViajesPage() {
     }
   }
 
-  // Operaciones del sector
   async function handleSectorSubmit(e) {
     e.preventDefault();
     setSubmittingSector(true);
@@ -180,7 +166,6 @@ export default function ViajesPage() {
     }
   }
 
-  // Operaciones de despacho
   async function handleCreateDispatch(e) {
     e.preventDefault();
     if (!dispatchForm.cuadrillaId || !dispatchForm.choferId || (!dispatchForm.sectorId && !dispatchForm.sectorText)) {
@@ -246,17 +231,12 @@ export default function ViajesPage() {
     }
   }
 
-  // Cálculos
   const activeDeployments = deployments.filter(d => d.estado === 'en_camino');
   const emergencyCrewsCount = cuadrillas.filter(c => c.modo_emergencia).length;
   
-
-
-  // Registros de movimiento dinámicos para la pestaña de seguimiento
   const generateMovementLogs = () => {
     const logs = [];
 
-    // Registros de implementación
     deployments.forEach(d => {
       const crewName = d.cuadrilla?.name || `Cuadrilla #${d.cuadrilla_id}`;
       const driverName = d.chofer ? `${d.chofer.nombres} ${d.chofer.apellidos}` : 'Chofer No Registrado';
@@ -284,7 +264,6 @@ export default function ViajesPage() {
       }
     });
 
-    // Registros de tripulación
     cuadrillas.forEach(c => {
       if (c.created_at) {
         logs.push({

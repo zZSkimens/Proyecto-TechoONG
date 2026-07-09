@@ -203,7 +203,6 @@ export default function InventarioPage() {
           </div>
         )
       ) : (
-        /* Movimientos view */
         movimientos.length === 0 ? (
           <div className="empty-state">
             <p>No hay movimientos de inventario registrados</p>

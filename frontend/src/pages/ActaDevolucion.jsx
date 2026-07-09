@@ -11,7 +11,6 @@ export default function ActaDevolucionPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedActa, setSelectedActa] = useState(null);
   
-  // Estado para la revisión de items: { actaItemId: 'Disponible' | 'Dañada' }
   const [revisiones, setRevisiones] = useState({});
 
   const user = getUser();
@@ -36,11 +35,9 @@ export default function ActaDevolucionPage() {
   function openProcesarModal(acta) {
     setSelectedActa(acta);
     
-    // Inicializar revisiones
     const initialRev = {};
     if (acta.items_devueltos) {
       acta.items_devueltos.forEach(item => {
-        // Por defecto, todo a Disponible
         initialRev[item.id] = 'Disponible';
       });
     }

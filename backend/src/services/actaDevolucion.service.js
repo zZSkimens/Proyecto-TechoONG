@@ -3,7 +3,6 @@ import { ActaDevolucion } from "../entities/actaDevolucion.entity.js";
 import { ActaDevolucionItem } from "../entities/actaDevolucionItem.entity.js";
 import { Item } from "../entities/item.entity.js";
 
-// Obtener todas las actas de devolución
 export async function getActasDevolucion() {
   const actaRepository = AppDataSource.getRepository(ActaDevolucion);
   const actaItemRepository = AppDataSource.getRepository(ActaDevolucionItem);
@@ -31,7 +30,6 @@ export async function getActasDevolucion() {
   return actas;
 }
 
-// Crear acta de devolución al disolver cuadrilla (jefe_cuadrilla)
 export async function crearActaDevolucion(data) {
   const queryRunner = AppDataSource.createQueryRunner();
   await queryRunner.connect();
@@ -40,7 +38,6 @@ export async function crearActaDevolucion(data) {
   try {
     const { cuadrilla_nombre, encargado, dias_trabajados, items_sobrantes } = data;
 
-    // Crear el acta
     const acta = queryRunner.manager.create(ActaDevolucion, {
       estado: "Pendiente",
       dias_trabajados,
@@ -51,9 +48,7 @@ export async function crearActaDevolucion(data) {
 
     const itemsCreados = [];
 
-    // Crear los items del acta como "Pendiente" (el admin_bodega los revisará)
     for (const itemData of items_sobrantes) {
-      // Verificar que el item existe
       const item = await queryRunner.manager.findOneBy(Item, { id: itemData.itemId });
       if (!item) {
         throw new Error(`El item con ID ${itemData.itemId} no existe`);
@@ -91,7 +86,6 @@ export async function crearActaDevolucion(data) {
   }
 }
 
-// Procesar acta de devolución (admin_bodega revisa y clasifica items)
 export async function procesarActaDevolucion(actaId, itemsRevisados) {
   const queryRunner = AppDataSource.createQueryRunner();
   await queryRunner.connect();
@@ -126,11 +120,9 @@ export async function procesarActaDevolucion(actaId, itemsRevisados) {
         throw new Error(`Estado inválido para ${actaItem.item.name}: ${revision.estado}. Use "Disponible" o "Dañada"`);
       }
 
-      // Actualizar el estado del item del acta
       actaItem.estado = revision.estado;
       await queryRunner.manager.save(ActaDevolucionItem, actaItem);
 
-      // Si está "Disponible", devolver al stock
       if (revision.estado === "Disponible") {
         const item = await queryRunner.manager.findOneBy(Item, { id: actaItem.item.id });
         if (item) {
@@ -138,7 +130,6 @@ export async function procesarActaDevolucion(actaId, itemsRevisados) {
           await queryRunner.manager.save(Item, item);
         }
       }
-      // Si está "Dañada", NO vuelve al stock (se descarta)
 
       resultados.push({
         item_id: actaItem.item.id,
@@ -150,7 +141,6 @@ export async function procesarActaDevolucion(actaId, itemsRevisados) {
       });
     }
 
-    // Marcar acta como procesada
     acta.estado = "Procesada";
     await queryRunner.manager.save(ActaDevolucion, acta);
 

@@ -46,7 +46,6 @@ export async function calcularMatchInteligente(obraId) {
       volZona.toLowerCase().trim() === obraZona.toLowerCase().trim();
     const scoreZona = coincideZona ? 1.0 : 0.0;
 
-    // Ponderación: 40% competencias, 40% certificaciones, 20% zona geográfica
     const pesoSkills = 0.4;
     const pesoCerts = 0.4;
     const pesoZona = 0.2;

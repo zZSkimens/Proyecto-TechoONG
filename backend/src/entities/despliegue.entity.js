@@ -20,9 +20,9 @@ export const Despliegue = new EntitySchema({
     estado: {
       type: "varchar",
       length: 50,
-      default: "pendiente", // pendiente, en_camino, finalizado
+      default: "pendiente", 
     },
-    // tracking / monitoring
+    
     latitud: {
       type: "varchar",
       length: 50,

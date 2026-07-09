@@ -15,7 +15,6 @@ app.get("/", (req, res) => {
 
 connectDB()
   .then(async () => {
-    // Siembra los usuarios por defecto (Configuración Inicial)
     await createInitialUsers();
     routerApi(app);
     const PORT = process.env.PORT || 3000;

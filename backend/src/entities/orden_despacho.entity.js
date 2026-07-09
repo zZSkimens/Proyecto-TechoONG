@@ -47,7 +47,6 @@ export const OrdenDespacho = new EntitySchema({
   },
 });
 
-// Items despachados
 export const OrdenDespachoItem = new EntitySchema({
   name: "OrdenDespachoItem",
   tableName: "orden_despacho_items",

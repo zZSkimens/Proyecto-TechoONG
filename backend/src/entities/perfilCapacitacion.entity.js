@@ -21,7 +21,7 @@ export const PerfilCapacitacion = new EntitySchema({
       type: "varchar",
       length: 50,
       nullable: false,
-      default: "cursando", // cursando, completado, reprobado
+      default: "cursando", 
     },
     fecha_completacion: {
       type: "timestamp",

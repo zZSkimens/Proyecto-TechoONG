@@ -36,11 +36,7 @@ export default function PerfilesPage() {
   const isCoordinador = user?.role === 'administrador' || user?.role === 'admin' || user?.role === 'jefe_cuadrilla' || user?.role === 'coordinador';
   const canValidate = isAdmin || isCoordinador;
   const navigate = useNavigate();
-
-  // Tab State
   const [activeTab, setActiveTab] = useState('mi-perfil');
-
-  // --- Mi Perfil State ---
   const [perfil, setPerfil] = useState({
     nombre_completo: '',
     telefono: '',
@@ -56,8 +52,6 @@ export default function PerfilesPage() {
   const [newCertificacion, setNewCertificacion] = useState('');
   const [compSuggestions, setCompSuggestions] = useState([]);
   const [certSuggestions, setCertSuggestions] = useState([]);
-
-  // --- Validación State ---
   const [perfiles, setPerfiles] = useState([]);
   const [loadingPerfiles, setLoadingPerfiles] = useState(false);
   const [selectedPerfil, setSelectedPerfil] = useState(null);
@@ -69,18 +63,12 @@ export default function PerfilesPage() {
   const [validating, setValidating] = useState(false);
   const [filtroRol, setFiltroRol] = useState('');
   const [filtroCompetencia, setFiltroCompetencia] = useState('');
-  
-  // Historial Log State
   const [historial, setHistorial] = useState([]);
   const [loadingHistorial, setLoadingHistorial] = useState(false);
-
-  // --- Match State ---
   const [obras, setObras] = useState([]);
   const [selectedCuadrillaId, setSelectedCuadrillaId] = useState('');
   const [matchData, setMatchData] = useState(null);
   const [loadingMatch, setLoadingMatch] = useState(false);
-  
-  // Cuadrilla Selection State
   const [cuadrillas, setCuadrillas] = useState([]);
   const [assigningCuadrilla, setAssigningCuadrilla] = useState(null); // voluntario_id of candidate being assigned
 
@@ -95,7 +83,6 @@ export default function PerfilesPage() {
     }
   }, [isAdmin, isCoordinador]);
 
-  // --- Mi Perfil Actions ---
   async function loadMiPerfil() {
     setLoadingPerfil(true);
     try {
@@ -137,7 +124,6 @@ export default function PerfilesPage() {
     }
   }
 
-  // --- Autocomplete Sugerencias Competencias ---
   const handleCompetenciaChange = (value) => {
     setNewCompetencia(value);
     if (!value.trim()) {
@@ -175,7 +161,6 @@ export default function PerfilesPage() {
     });
   };
 
-  // --- Autocomplete Sugerencias Certificaciones ---
   const handleCertificacionChange = (value) => {
     setNewCertificacion(value);
     if (!value.trim()) {
@@ -213,7 +198,6 @@ export default function PerfilesPage() {
     });
   };
 
-  // --- Validación Actions ---
   async function loadTodosLosPerfiles() {
     setLoadingPerfiles(true);
     try {
@@ -254,7 +238,6 @@ export default function PerfilesPage() {
       comentario: '',
     });
     
-    // Cargar Historial
     setLoadingHistorial(true);
     setHistorial([]);
     try {
@@ -267,7 +250,6 @@ export default function PerfilesPage() {
     }
   };
 
-  // --- Match Actions ---
   async function loadObras() {
     try {
       const data = await getObras();
@@ -310,7 +292,6 @@ export default function PerfilesPage() {
     }
   }
 
-  // Asignar voluntario o especialista a cuadrilla
   async function handleAssignToCuadrilla(candidate, asEspecialista = false) {
     if (!selectedCuadrillaId) {
       showToast('Por favor, selecciona una cuadrilla arriba primero.', 'warning');
