@@ -1,4 +1,4 @@
-import { get, put } from './api.js';
+import { get, post } from './api.js';
 
 export async function getOrdenes(filtros = {}) {
   const params = new URLSearchParams(filtros).toString();
@@ -13,7 +13,7 @@ export async function getOrdenById(id) {
 }
 
 export async function procesarDespacho(id, data) {
-  const response = await put(`/ordenes-despacho/${id}/despachar`, data);
+  const response = await post(`/ordenes-despacho/${id}/despachar`, data);
   return response.data;
 }
 
