@@ -3,6 +3,7 @@ import { getSolicitudes, crearSolicitud } from '../services/solicitudes.service.
 import { getProductos } from '../services/productos.service.js';
 import { getUser } from '../services/auth.service.js';
 import { getTrazabilidad } from '../services/recepciones.service.js';
+import { getCuadrillas } from '../services/cuadrillas.service.js';
 import StatusBadge from '../components/StatusBadge.jsx';
 import Modal from '../components/Modal.jsx';
 import { showToast } from '../helpers/toast.js';
@@ -12,11 +13,13 @@ import '../styles/Trazabilidad.css';
 export default function SolicitudesPage() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [productos, setProductos] = useState([]);
+  const [cuadrillas, setCuadrillas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtroEstado, setFiltroEstado] = useState('');
   const [showNew, setShowNew] = useState(false);
   const [showDetail, setShowDetail] = useState(null);
   const [formData, setFormData] = useState({
+    cuadrilla_id: '',
     fecha_entrega: '',
     destino: '',
     actividad: '',
@@ -29,6 +32,22 @@ export default function SolicitudesPage() {
   const [loadingTrazabilidad, setLoadingTrazabilidad] = useState(false);
 
   const user = getUser();
+
+  // Auto-select squad led by current user
+  useEffect(() => {
+    if (showNew && user && cuadrillas.length > 0) {
+      const mySquad = cuadrillas.find(
+        (c) => c.encargado && c.encargado.toLowerCase().trim() === user.name.toLowerCase().trim()
+      );
+      if (mySquad) {
+        setFormData((prev) => ({
+          ...prev,
+          cuadrilla_id: mySquad.id.toString(),
+          destino: mySquad.zona_afectada || prev.destino,
+        }));
+      }
+    }
+  }, [showNew, user, cuadrillas]);
 
   useEffect(() => {
     loadData();
@@ -59,12 +78,14 @@ export default function SolicitudesPage() {
     try {
       const filtros = {};
       if (filtroEstado) filtros.estado = filtroEstado;
-      const [sols, prods] = await Promise.all([
+      const [sols, prods, cuads] = await Promise.all([
         getSolicitudes(filtros),
         getProductos(),
+        getCuadrillas(),
       ]);
       setSolicitudes(Array.isArray(sols) ? sols : []);
       setProductos(Array.isArray(prods) ? prods : []);
+      setCuadrillas(Array.isArray(cuads) ? cuads : []);
     } catch (err) {
       showToast(err.message || 'Error al cargar datos', 'error');
     } finally {
@@ -102,7 +123,8 @@ export default function SolicitudesPage() {
     try {
       const payload = {
         solicitante_id: user?.id || 1,
-        nombre_solicitante: user?.email || 'Jefe de Cuadrilla',
+        nombre_solicitante: user?.name || user?.email || 'Jefe de Cuadrilla',
+        cuadrilla_id: formData.cuadrilla_id ? parseInt(formData.cuadrilla_id) : null,
         fecha_entrega: formData.fecha_entrega,
         destino: formData.destino,
         actividad: formData.actividad,
@@ -117,6 +139,7 @@ export default function SolicitudesPage() {
       showToast('Solicitud creada exitosamente');
       setShowNew(false);
       setFormData({
+        cuadrilla_id: '',
         fecha_entrega: '',
         destino: '',
         actividad: '',
@@ -210,6 +233,7 @@ export default function SolicitudesPage() {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Cuadrilla</th>
                 <th>Actividad</th>
                 <th>Destino</th>
                 <th>Fecha Entrega</th>
@@ -219,17 +243,21 @@ export default function SolicitudesPage() {
               </tr>
             </thead>
             <tbody>
-              {solicitudes.map((sol) => (
-                <tr key={sol.id} className="clickable" onClick={() => setShowDetail(sol)}>
-                  <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{sol.id}</td>
-                  <td>{sol.actividad}</td>
-                  <td>{sol.destino}</td>
-                  <td>{formatDate(sol.fecha_entrega)}</td>
-                  <td><StatusBadge estado={sol.estado} /></td>
-                  <td>{sol.responsable_recepcion}</td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(sol.created_at)}</td>
-                </tr>
-              ))}
+              {solicitudes.map((sol) => {
+                const squad = cuadrillas.find((c) => c.id === sol.cuadrilla_id);
+                return (
+                  <tr key={sol.id} className="clickable" onClick={() => setShowDetail(sol)}>
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>#{sol.id}</td>
+                    <td style={{ fontWeight: 500 }}>{squad ? squad.name : 'Individual'}</td>
+                    <td>{sol.actividad}</td>
+                    <td>{sol.destino}</td>
+                    <td>{formatDate(sol.fecha_entrega)}</td>
+                    <td><StatusBadge estado={sol.estado} /></td>
+                    <td>{sol.responsable_recepcion}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{formatDate(sol.created_at)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -251,6 +279,29 @@ export default function SolicitudesPage() {
         }
       >
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <div className="form-group">
+            <label className="form-label">Cuadrilla Asociada</label>
+            <select
+              className="select"
+              value={formData.cuadrilla_id}
+              onChange={(e) => {
+                const val = e.target.value;
+                const selectedSquad = cuadrillas.find(c => c.id.toString() === val);
+                setFormData({
+                  ...formData,
+                  cuadrilla_id: val,
+                  destino: selectedSquad ? selectedSquad.zona_afectada : formData.destino
+                });
+              }}
+            >
+              <option value="">-- Seleccionar Cuadrilla (Opcional) --</option>
+              {cuadrillas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} (Encargado: {c.encargado || 'Sin asignar'})
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Fecha de Entrega *</label>
@@ -379,6 +430,12 @@ export default function SolicitudesPage() {
                 <div className="detail-item">
                   <span className="detail-label">Estado</span>
                   <span className="detail-value"><StatusBadge estado={showDetail.estado} /></span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Cuadrilla</span>
+                  <span className="detail-value">
+                    {cuadrillas.find(c => c.id === showDetail.cuadrilla_id)?.name || 'Sin cuadrilla asociada'}
+                  </span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Solicitante</span>
