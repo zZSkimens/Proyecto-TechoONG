@@ -79,6 +79,102 @@ export async function createInitialUsers() {
       name: "Diego",
       password: "password123",
       role: "postulante"
+    },
+    {
+      rut: "24444444-4",
+      name: "Camila",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "25555555-5",
+      name: "Mateo",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "26666666-6",
+      name: "Valentina",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "27777777-7",
+      name: "Sebastian Vidal",
+      password: "VolunPass3",
+      role: "voluntario"
+    },
+    {
+      rut: "28888888-8",
+      name: "Martina Lagos",
+      password: "VolunPass4",
+      role: "voluntario"
+    },
+    {
+      rut: "29999999-9",
+      name: "Joaquin Torres",
+      password: "VolunPass5",
+      role: "voluntario"
+    },
+    {
+      rut: "10000000-0",
+      name: "Antonia",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "10000001-1",
+      name: "Benjamin",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "10000002-2",
+      name: "Constanza",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "10000003-3",
+      name: "Daniel",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "10000004-4",
+      name: "Emilia",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "10000005-5",
+      name: "Felipe Gonzalez",
+      password: "VolunPass6",
+      role: "voluntario"
+    },
+    {
+      rut: "10000006-6",
+      name: "Gabriela Diaz",
+      password: "VolunPass7",
+      role: "voluntario"
+    },
+    {
+      rut: "10000007-7",
+      name: "Hernan Silva",
+      password: "VolunPass8",
+      role: "voluntario"
+    },
+    {
+      rut: "10000008-8",
+      name: "Isidora Castro",
+      password: "VolunPass9",
+      role: "voluntario"
+    },
+    {
+      rut: "10000009-9",
+      name: "Javier Soto",
+      password: "VolunPass10",
+      role: "voluntario"
     }
   ];
 
@@ -127,6 +223,70 @@ export async function createInitialUsers() {
       apellidos: "Perez",
       correo: "catalina.perez@correo.cl",
       password: "VolunPass2",
+      disponible: true
+    },
+    {
+      rut: "27777777-7",
+      nombres: "Sebastian",
+      apellidos: "Vidal",
+      correo: "sebastian@correo.cl",
+      password: "VolunPass3",
+      disponible: true
+    },
+    {
+      rut: "28888888-8",
+      nombres: "Martina",
+      apellidos: "Lagos",
+      correo: "martina@correo.cl",
+      password: "VolunPass4",
+      disponible: true
+    },
+    {
+      rut: "29999999-9",
+      nombres: "Joaquin",
+      apellidos: "Torres",
+      correo: "joaquin@correo.cl",
+      password: "VolunPass5",
+      disponible: true
+    },
+    {
+      rut: "10000005-5",
+      nombres: "Felipe",
+      apellidos: "Gonzalez",
+      correo: "felipe@correo.cl",
+      password: "VolunPass6",
+      disponible: true
+    },
+    {
+      rut: "10000006-6",
+      nombres: "Gabriela",
+      apellidos: "Diaz",
+      correo: "gabriela@correo.cl",
+      password: "VolunPass7",
+      disponible: true
+    },
+    {
+      rut: "10000007-7",
+      nombres: "Hernan",
+      apellidos: "Silva",
+      correo: "hernan@correo.cl",
+      password: "VolunPass8",
+      disponible: true
+    },
+    {
+      rut: "10000008-8",
+      nombres: "Isidora",
+      apellidos: "Castro",
+      correo: "isidora@correo.cl",
+      password: "VolunPass9",
+      disponible: true
+    },
+    {
+      rut: "10000009-9",
+      nombres: "Javier",
+      apellidos: "Soto",
+      correo: "javier@correo.cl",
+      password: "VolunPass10",
       disponible: true
     }
   ];
