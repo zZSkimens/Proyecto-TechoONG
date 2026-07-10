@@ -6,10 +6,9 @@ import { crearObra, listarObras, obtenerMatchParaObra } from "../controllers/obr
 const router = Router();
 
 router.use(authMiddleware);
-router.use(coordinadorMiddleware);
 
-router.post("/", crearObra);
+router.post("/", coordinadorMiddleware, crearObra);
 router.get("/", listarObras);
-router.get("/:id/match", obtenerMatchParaObra);
+router.get("/:id/match", coordinadorMiddleware, obtenerMatchParaObra);
 
 export default router;
