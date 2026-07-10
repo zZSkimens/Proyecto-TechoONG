@@ -64,19 +64,19 @@ export async function createInitialUsers() {
     },
     {
       rut: "21111111-1",
-      name: "Andres Postulante",
+      name: "Andres",
       password: "password123",
       role: "postulante"
     },
     {
       rut: "22222222-2",
-      name: "Sofia Aspirante",
+      name: "Sofia",
       password: "password123",
       role: "postulante"
     },
     {
       rut: "23333333-3",
-      name: "Diego Voluntario Wannabe",
+      name: "Diego",
       password: "password123",
       role: "postulante"
     }
