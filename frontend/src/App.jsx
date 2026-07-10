@@ -28,6 +28,7 @@ const ROLE_ROUTES = {
   coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
   coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
   voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
+  postulante: ['/inicio', '/perfiles'],
 };
 
 function getDefaultRoute(role) {

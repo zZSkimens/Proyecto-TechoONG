@@ -28,6 +28,8 @@ export async function obtenerTodosLosPerfiles(filtros = {}) {
 
   if (filtros.rol) {
     query.andWhere("perfil.rol = :rol", { rol: filtros.rol });
+  } else {
+    query.andWhere("perfil.rol IN (:...rolesValidos)", { rolesValidos: ['postulante', 'voluntario'] });
   }
 
   if (filtros.competencia) {
@@ -52,6 +54,22 @@ export async function cambiarEstadoPerfil(perfilId, estado, zonaAsignada = null)
   perfil.estado = estado;
   if (zonaAsignada) {
     perfil.zona_asignada = zonaAsignada;
+  }
+
+  if (estado === "habilitado") {
+    perfil.rol = "voluntario";
+    if (perfil.user) {
+      perfil.user.role = "voluntario";
+      const userRepository = AppDataSource.getRepository("User");
+      await userRepository.save(perfil.user);
+    }
+  } else {
+    perfil.rol = "postulante";
+    if (perfil.user) {
+      perfil.user.role = "postulante";
+      const userRepository = AppDataSource.getRepository("User");
+      await userRepository.save(perfil.user);
+    }
   }
 
   return await perfilRepository.save(perfil);

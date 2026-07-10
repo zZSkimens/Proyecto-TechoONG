@@ -28,9 +28,35 @@ export async function createVoluntario(data) {
 }
 
 export async function getVoluntarios() {
-  return await voluntarioRepository.find({
+  const voluntariosAntiguos = await voluntarioRepository.find({
     relations: ["cuadrillas"]
   });
+
+  const perfilRepo = AppDataSource.getRepository("Perfil");
+  const perfilesVoluntarios = await perfilRepo.find({
+    where: { rol: "voluntario" },
+    relations: ["user"]
+  });
+
+  const combined = [...voluntariosAntiguos];
+
+  for (const p of perfilesVoluntarios) {
+    if (p.user && p.user.rut) {
+      if (!combined.some(v => v.rut === p.user.rut)) {
+        combined.push({
+          id: `p_${p.id}`,
+          rut: p.user.rut,
+          nombres: p.nombre_completo,
+          apellidos: "",
+          correo: p.user.email,
+          telefono: p.telefono,
+          disponible: p.estado === "habilitado"
+        });
+      }
+    }
+  }
+
+  return combined;
 }
 
 export async function getVoluntarioById(id) {

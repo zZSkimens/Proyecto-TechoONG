@@ -13,6 +13,7 @@ const ROLE_LINKS = {
   coordinador: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/items', '/despacho-herramientas', '/actas-devolucion', '/perfiles', '/reuniones'],
   coordinador_viajes: ['/inicio', '/solicitudes', '/recepcion', '/aprobacion', '/despacho', '/inventario', '/cuadrillas', '/viajes', '/actas-devolucion', '/perfiles'],
   voluntario: ['/inicio', '/viajes', '/perfiles', '/reuniones'],
+  postulante: ['/inicio', '/perfiles'],
 };
 
 const SECTIONS = [
@@ -195,6 +196,7 @@ const ROLE_LABELS = {
   coordinador: 'Coordinador',
   coordinador_viajes: 'Coordinador de Viajes',
   voluntario: 'Voluntario',
+  postulante: 'Postulante',
 };
 
 export default function Sidebar({ collapsed, onToggleCollapse }) {

@@ -4,12 +4,19 @@ import { Cuadrilla } from "../entities/cuadrilla.entity.js";
 export async function createCuadrilla(data) {
   const cuadrillaRepository = AppDataSource.getRepository(Cuadrilla);
   const payload = { ...data };
+  
+  if (payload.fecha === "") {
+    payload.fecha = null;
+  }
+
   if (data.obra_id) {
     const obraRepo = AppDataSource.getRepository("Obra");
     const obra = await obraRepo.findOneBy({ id: parseInt(data.obra_id) });
     if (obra) {
       payload.obra = obra;
-      if (!payload.zona_afectada) payload.zona_afectada = obra.zona;
+      if (!payload.zona_afectada) {
+        payload.zona_afectada = obra.zona ? obra.zona : "Sin asignar";
+      }
     }
     delete payload.obra_id;
   }
@@ -60,12 +67,19 @@ export async function updateCuadrilla(id, data) {
   if (!existingCuadrilla) return null;
 
   const updatePayload = { ...data };
+  
+  if (updatePayload.fecha === "") {
+    updatePayload.fecha = null;
+  }
+
   if (data.obra_id !== undefined) {
     if (data.obra_id) {
       const obraRepo = AppDataSource.getRepository("Obra");
       const obra = await obraRepo.findOneBy({ id: parseInt(data.obra_id) });
       updatePayload.obra = obra || null;
-      if (obra && !updatePayload.zona_afectada) updatePayload.zona_afectada = obra.zona;
+      if (obra && !updatePayload.zona_afectada) {
+        updatePayload.zona_afectada = obra.zona ? obra.zona : "Sin asignar";
+      }
     } else {
       updatePayload.obra = null;
     }
