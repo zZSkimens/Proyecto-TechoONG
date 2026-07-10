@@ -2,6 +2,7 @@ import { AppDataSource } from "./configDb.js";
 import { User } from "../entities/user.entity.js";
 import { Obra } from "../entities/obra.entity.js";
 import { Voluntario } from "../entities/voluntario.entity.js";
+import { Perfil } from "../entities/perfil.entity.js";
 import bcrypt from "bcrypt";
 
 export async function createInitialUsers() {
@@ -60,20 +61,53 @@ export async function createInitialUsers() {
       name: "Juan Coordinador",
       password: "coord",
       role: "coordinador"
+    },
+    {
+      rut: "21111111-1",
+      name: "Andres Postulante",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "22222222-2",
+      name: "Sofia Aspirante",
+      password: "password123",
+      role: "postulante"
+    },
+    {
+      rut: "23333333-3",
+      name: "Diego Voluntario Wannabe",
+      password: "password123",
+      role: "postulante"
     }
-
   ];
 
+  const perfilRepository = AppDataSource.getRepository(Perfil);
+
   for (const userData of usersToSeed) {
-    const existingUser = await userRepository.findOneBy({ rut: userData.rut });
-    if (!existingUser) {
+    let user = await userRepository.findOneBy({ rut: userData.rut });
+    if (!user) {
       const hashedPassword = await bcrypt.hash(userData.password, 10);
-      const user = userRepository.create({
+      user = userRepository.create({
         ...userData,
         password: hashedPassword
       });
       await userRepository.save(user);
       console.log(`=> Configuración Inicial: Usuario creado: ${userData.name} (Rol: ${userData.role})`);
+    }
+
+    const existingPerfil = await perfilRepository.findOneBy({ user_id: user.id });
+    if (!existingPerfil) {
+      const perfil = perfilRepository.create({
+        user_id: user.id,
+        nombre_completo: user.name,
+        rol: user.role,
+        estado: user.role === "postulante" ? "registrado" : "activo",
+        competencias: user.role === "postulante" ? ["Liderazgo de Equipos", "Carpintería"] : [],
+        certificaciones: user.role === "postulante" ? ["Curso Prevención de Riesgos"] : []
+      });
+      await perfilRepository.save(perfil);
+      console.log(`=> Configuración Inicial: Perfil creado para: ${userData.name}`);
     }
   }
 
