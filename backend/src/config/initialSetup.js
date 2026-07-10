@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 
 export async function createInitialUsers() {
   const userRepository = AppDataSource.getRepository(User);
-  //Creamos usuarios para pruebas
   const usersToSeed = [
     {
       rut: "11111111-1",
@@ -78,7 +77,6 @@ export async function createInitialUsers() {
     }
   }
 
-  // Seed de Voluntarios de prueba
   const voluntarioRepository = AppDataSource.getRepository(Voluntario);
   const volunteersToSeed = [
     {
@@ -112,7 +110,6 @@ export async function createInitialUsers() {
     }
   }
 
-  // Seed de Obras de prueba
   const obraRepository = AppDataSource.getRepository(Obra);
   const obrasToSeed = [
     {
