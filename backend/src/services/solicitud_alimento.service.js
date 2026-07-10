@@ -15,6 +15,7 @@ export async function findSolicitudes(filtros = {}) {
   const where = {};
   if (filtros.estado) where.estado = filtros.estado;
   if (filtros.solicitante_id) where.solicitante_id = parseInt(filtros.solicitante_id);
+  if (filtros.cuadrilla_id) where.cuadrilla_id = parseInt(filtros.cuadrilla_id);
 
   const solicitudes = await solicitudRepository.find({
     where,
@@ -67,6 +68,7 @@ export async function createSolicitud(data) {
     responsable_recepcion: data.responsable_recepcion,
     estado: "pendiente",
     observaciones: data.observaciones || null,
+    cuadrilla_id: data.cuadrilla_id ? parseInt(data.cuadrilla_id) : null,
   });
 
   const solicitudGuardada = await solicitudRepository.save(solicitud);
