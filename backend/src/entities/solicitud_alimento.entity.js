@@ -65,6 +65,11 @@ export const SolicitudAlimento = new EntitySchema({
       type: "timestamp",
       nullable: true,
     },
+    cuadrilla_id: {
+      type: "int",
+      nullable: true,
+      comment: "ID de la cuadrilla asociada a la solicitud",
+    },
     created_at: {
       type: "timestamp",
       createDate: true,
